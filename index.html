@@ -59,7 +59,7 @@
     .badge-cyan { color: var(--cyan); }
 
     .countdown-box { margin-bottom: 14px; }
-    .countdown-title { font-size: 14px; font-weight: bold; color: #fff; }
+    .countdown-title { font-size: 13.5px; font-weight: bold; color: #fff; }
     .countdown-sub { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
 
     .tele-bar {
@@ -177,7 +177,7 @@
     }
     .modal-title { color: var(--alert); font-weight: bold; font-size: 13px; margin-bottom: 8px; }
     .modal-btn {
-      margin-top: 14px;
+      margin-top: 10px;
       width: 100%;
       background: #2a0a0a;
       border: 1px solid var(--alert);
@@ -186,6 +186,11 @@
       font-family: inherit;
       font-weight: bold;
       cursor: pointer;
+    }
+    .modal-btn-safe {
+      background: #0d2818;
+      border-color: var(--accent);
+      color: var(--accent);
     }
   </style>
 </head>
@@ -223,18 +228,19 @@
 
     <div class="grid">
       <button id="btnMedic" class="btn" onclick="toggleMedic()">🧪 DEPLOY MEDIC</button>
-      <button id="btnEngage" class="btn" onclick="confirmEngaged()">🪂 [CONFIRM] ENGAGED</button>
       <button id="btnPhd" class="btn" onclick="addPhd()">📡 PhD: +1h</button>
-      <button id="btnExec" class="btn" onclick="confirmExec()">🧱 EXEC_CONTROL</button>
+
+      <button id="btnEngage" class="btn btn-full" onclick="confirmEngaged()">🪂 [CONFIRM] ENGAGED</button>
+      <button id="btnExec" class="btn btn-full" onclick="confirmExec()">🧱 EXECUTIVE CONTROL</button>
 
       <!-- Denní manévr: Ústup / Návrat -->
       <button id="toggleRetreatBtn" class="btn btn-full" onclick="toggleRetreat()"></button>
       
-      <!-- Večerní fáze 1 (20:00): RTB / Ceasefire -->
+      <!-- Večerní fáze 1 (20:00): Return to base -->
       <button id="btnCeasefireRtb" class="btn btn-full btn-cyan" onclick="confirmCeasefireRtb()"></button>
 
-      <!-- Večerní fáze 2 (22:30+): Lockdown & Finální prověrka -->
-      <button id="btnFinalLockdown" class="btn btn-full" onclick="handleFinalLockdown()"></button>
+      <!-- Večerní fáze 2 (22:30+): Lockdown & Verifikace integrity -->
+      <button id="btnFinalLockdown" class="btn btn-full" onclick="openIntegrityModal()"></button>
 
       <button id="btnDebrief" class="btn btn-full" onclick="addDebrief()">📻 [COMMS] TAC_DEBRIEF (0/2)</button>
       <button class="btn btn-full btn-alert" onclick="openStandDown()">🚨 [PROTOCOL] STAND DOWN</button>
@@ -259,19 +265,34 @@
     </div>
   </div>
 
+  <div id="integrityModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">🛡️ VERIFIKACE EXECUTIVE CONTROL</div>
+      <p>[ZÁVĚREČNÁ PROVĚRKA CELÉHO DNE]</p><br>
+      <p>Byla obranná linie kortexu udržena po celý den a večer bez propadu do gamingu či zakázaných aktivit?</p>
+      <button class="modal-btn modal-btn-safe" onclick="resolveIntegrity(true)">🛡️ [PERIMETER INTACT] LINIE UDRŽENA (+1 STREAK)</button>
+      <button class="modal-btn" onclick="resolveIntegrity(false)">❌ [BREACH CONFIRMED] PROLOMENO (MISSION FAILED)</button>
+    </div>
+  </div>
+
   <script>
     const BIN_ID = "6aa83826ffd5d16053063312";
     const API_KEY = "$2a$10$5W9YRtTCXczTOLRzMcJf4.qnbAzWLqk.vCFU08dvkKQcVoKIduxG2";
     const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
+    function getTodayStr() { return new Date().toISOString().slice(0, 10); }
+    function getCurrentMonthStr() { return new Date().toISOString().slice(0, 7); }
+
     let state = {
-      date: new Date().toISOString().slice(0, 10),
+      date: getTodayStr(),
+      currentMonth: getCurrentMonthStr(),
       atomoxetin: false,
       engaged: false,
       ceasefireConfirmed: false,
       phdHours: 0,
       streak: 0,
       execConfirmedToday: false,
+      execFailedToday: false,
       debriefCount: 0,
       tacticalRetreat: false
     };
@@ -286,7 +307,16 @@
         if (res.ok) {
           let data = await res.json();
           let record = data.record;
-          let today = new Date().toISOString().slice(0, 10);
+          let today = getTodayStr();
+          let thisMonth = getCurrentMonthStr();
+
+          // 1. Měsíční reset počítadla terapií
+          if (!record.currentMonth || record.currentMonth !== thisMonth) {
+            record.currentMonth = thisMonth;
+            record.debriefCount = 0;
+          }
+
+          // 2. Denní reset úkolů o půlnoci
           if (record.date !== today) {
             record.date = today;
             record.atomoxetin = false;
@@ -294,6 +324,7 @@
             record.ceasefireConfirmed = false;
             record.phdHours = 0;
             record.execConfirmedToday = false;
+            record.execFailedToday = false;
             record.tacticalRetreat = false;
             syncCloudState(record);
           }
@@ -349,27 +380,19 @@
       syncCloudState();
     }
 
-    function handleFinalLockdown() {
-      if (!state.execConfirmedToday) {
-        if (confirm("Potvrdit integritu exekutivy (žádný relaps do gamingu)?")) {
-          state.streak += 1;
-          state.execConfirmedToday = true;
-        }
-      }
-      render();
-      syncCloudState();
-    }
-
     function addPhd() {
-      state.phdHours = state.phdHours >= 3 ? 0 : state.phdHours + 1;
-      render();
-      syncCloudState();
+      if (state.phdHours < 3) {
+        state.phdHours += 1;
+        render();
+        syncCloudState();
+      }
     }
 
     function confirmExec() {
       if (!state.execConfirmedToday) {
         state.streak += 1;
         state.execConfirmedToday = true;
+        state.execFailedToday = false;
       } else {
         state.execConfirmedToday = false;
         state.streak = Math.max(0, state.streak - 1);
@@ -393,6 +416,51 @@
     function openStandDown() { document.getElementById("standDownModal").style.display = "flex"; }
     function closeStandDown() { document.getElementById("standDownModal").style.display = "none"; }
 
+    function openIntegrityModal() { document.getElementById("integrityModal").style.display = "flex"; }
+    function closeIntegrityModal() { document.getElementById("integrityModal").style.display = "none"; }
+
+    function resolveIntegrity(isSuccess) {
+      closeIntegrityModal();
+      if (isSuccess) {
+        if (!state.execConfirmedToday) {
+          state.streak += 1;
+          state.execConfirmedToday = true;
+        }
+        state.execFailedToday = false;
+      } else {
+        state.execConfirmedToday = false;
+        state.execFailedToday = true;
+        state.streak = 0;
+      }
+      render();
+      syncCloudState();
+    }
+
+    function getPhdIntel() {
+      if (state.phdHours === 0) {
+        return {
+          title: "INTEL: ŽÁDNÁ DATA // SEKTOR BEZ ZÁZNAMU",
+          sub: "Bojový sektor bez záznamu, nulový posun."
+        };
+      }
+      if (state.phdHours === 1) {
+        return {
+          title: "INTEL: SIGNÁL ZACHYCEN // 1/3H",
+          sub: "Prvotní spojení se sektorem navázáno // Zahájeno stahování surových dat"
+        };
+      }
+      if (state.phdHours === 2) {
+        return {
+          title: "INTEL: TAKTICKÁ DATA ZAJIŠTĚNA // 2/3H",
+          sub: "Získány klíčové informace // Dekódování pokročilých struktur sektoru"
+        };
+      }
+      return {
+        title: "INTEL: VÝZKUMNÝ CÍL SPLNĚN // 3/3H",
+        sub: "Strategická data kompletní // Cíl dnešní operace úspěšně vytěžen"
+      };
+    }
+
     function render() {
       const now = new Date();
       const hr = now.getHours();
@@ -403,20 +471,26 @@
 
       const isExecSafe = state.execConfirmedToday;
       const allObjectivesDone = (state.atomoxetin && state.phdHours >= 3 && isExecSafe);
+      const intel = getPhdIntel();
 
       let curD = now.getDate();
       let diffDays = curD <= 12 ? (12 - curD) : (30 - curD + 12);
       document.getElementById("objMilestone").innerText = `OBJ: T-${diffDays}D DO 12.`;
 
+      // Telemetrie MEDIC
       const tMed = document.getElementById("teleMedic");
       tMed.innerText = state.atomoxetin ? "IN POS ✓" : "STANDBY";
       tMed.style.color = state.atomoxetin ? "var(--accent)" : "var(--alert)";
 
+      // Telemetrie OPS
       const tOps = document.getElementById("teleOps");
       if (isLockdown) {
-        if (!isExecSafe) {
+        if (state.execFailedToday) {
           tOps.innerText = "FAILED ❌";
           tOps.style.color = "var(--alert)";
+        } else if (!isExecSafe) {
+          tOps.innerText = "VERIFY REQ";
+          tOps.style.color = "var(--orange)";
         } else if (allObjectivesDone) {
           tOps.innerText = "VICTORY ✓";
           tOps.style.color = "var(--gold)";
@@ -432,17 +506,25 @@
         tOps.style.color = state.engaged ? "var(--accent)" : "var(--text-muted)";
       }
 
+      // Telemetrie PhD
       const tPhd = document.getElementById("telePhd");
       tPhd.innerText = `${state.phdHours}/3`;
-      tPhd.style.color = state.phdHours === 3 ? "var(--accent)" : "var(--text)";
+      tPhd.style.color = state.phdHours === 3 ? "var(--accent)" : (state.phdHours > 0 ? "var(--cyan)" : "var(--text-muted)");
 
+      // Telemetrie EXEC
       const tExec = document.getElementById("teleExec");
-      tExec.innerText = `D-${String(state.streak).padStart(2,'0')} ${state.execConfirmedToday ? "✓" : "!"}`;
-      tExec.style.color = (isLockdown && !isExecSafe) ? "var(--alert)" : (state.execConfirmedToday ? "var(--accent)" : "var(--text-muted)");
+      tExec.innerText = `D-${String(state.streak).padStart(2,'0')} ${state.execConfirmedToday ? "✓" : (state.execFailedToday ? "❌" : "!")}`;
+      tExec.style.color = state.execFailedToday ? "var(--alert)" : (state.execConfirmedToday ? "var(--accent)" : "var(--text-muted)");
 
+      // Tlačítka
       document.getElementById("btnMedic").className = state.atomoxetin ? "btn btn-done" : "btn";
       
+      const btnPhd = document.getElementById("btnPhd");
+      btnPhd.innerText = `📡 PhD: ${state.phdHours}/3h`;
+      btnPhd.className = state.phdHours === 3 ? "btn btn-done" : "btn";
+
       const btnEng = document.getElementById("btnEngage");
+      const btnExec = document.getElementById("btnExec");
       const rBtn = document.getElementById("toggleRetreatBtn");
       const btnRtb = document.getElementById("btnCeasefireRtb");
       const btnLockdown = document.getElementById("btnFinalLockdown");
@@ -452,38 +534,45 @@
 
       btnRtb.style.display = "none";
       btnLockdown.style.display = "none";
+      btnEng.style.display = "none";
+      rBtn.style.display = "none";
+
+      btnExec.className = "btn btn-full" + (state.execConfirmedToday ? " btn-done" : "");
 
       if (isLockdown) {
-        btnEng.style.display = "none";
-        rBtn.style.display = "none";
         btnLockdown.style.display = "block";
 
-        if (!isExecSafe) {
-          btnLockdown.innerText = "🚨 [BREACH ALERT] VERIFY EXEC INTEGRITY";
+        if (state.execFailedToday) {
+          btnLockdown.innerText = "🚨 [MISSION FAILED] PERIMETER BREACHED";
           btnLockdown.className = "btn btn-full btn-failed";
           badge.innerText = "[SYS: MISSION FAILED]";
           badge.className = "badge badge-alert";
           title.innerText = ">> DEFENSE PERIMETER BREACHED // FAILED";
-          sub.innerText = "EXEKUTIVNÍ KONTROLA NEPOTVRZENA // ZAHÁJIT NOUZOVÝ DEBRIEF";
+          sub.innerText = "EXEKUTIVNÍ KONTROLA SELHALA // ZAHÁJIT NOUZOVÝ DEBRIEF";
+        } else if (!isExecSafe) {
+          btnLockdown.innerText = "🚨 [POSSIBLE BREACH ALERT] VERIFY EXEC INTEGRITY";
+          btnLockdown.className = "btn btn-full btn-orange";
+          badge.innerText = "[SYS: VERIFY REQUIRED]";
+          badge.className = "badge badge-orange";
+          title.innerText = ">> BASE LOCKDOWN // ČEKÁ SE NA VERIFIKACI";
+          sub.innerText = `${intel.sub} // POTVRĎ INTEGRITU DNE`;
         } else if (allObjectivesDone) {
           btnLockdown.innerText = "🏆 [ALL OBJECTIVES SECURED] FULL VICTORY";
           btnLockdown.className = "btn btn-full btn-reward";
           badge.innerText = "[SYS: MISSION ACCOMPLISHED]";
           badge.className = "badge badge-gold";
           title.innerText = ">> DNEŠNÍ BITVA VYHRÁNA // LINIE UDRŽENA";
-          sub.innerText = "ŽÁDNÉ ZTRÁTY // KORTEX UHÁJIL POZICE // REGENERACE POVOLENA";
+          sub.innerText = `ŽÁDNÉ ZTRÁTY // ${intel.sub} // REGENERACE POVOLENA`;
         } else {
           btnLockdown.innerText = "🔒 [BASE LOCKDOWN] PERIMETER SECURED";
           btnLockdown.className = "btn btn-full btn-done";
           badge.innerText = "[SYS: BASE LOCKDOWN]";
           badge.className = "badge badge-cyan";
           title.innerText = ">> BASE LOCKDOWN // KONTROLA UDRŽENA";
-          sub.innerText = "EXEKUTIVA ZAJIŠTĚNA // NESPLNĚNÉ CÍLE ODLOŽENY DO DALŠÍHO VÝSADKU";
+          sub.innerText = `EXEKUTIVA ZAJIŠTĚNA // ${intel.sub}`;
         }
 
       } else if (isPostCeasefire) {
-        btnEng.style.display = "none";
-        rBtn.style.display = "none";
         btnRtb.style.display = "block";
 
         if (state.ceasefireConfirmed) {
@@ -492,23 +581,20 @@
           badge.innerText = "[SYS: AT BASE]";
           badge.className = "badge badge-cyan";
           title.innerText = ">> CEASEFIRE UDRŽEN // PERIMETR ZAJIŠTĚN";
-          sub.innerText = "BOJOVÝ KONTAKT PŘERUŠEN // ZBRANĚ ZAJIŠTĚNY // DEKOMPRESE JEDNOTKY";
+          sub.innerText = `BOJOVÝ KONTAKT PŘERUŠEN // ${intel.sub} // DEKOMPRESE JEDNOTKY`;
         } else {
-          btnRtb.innerText = "🛑 [CONFIRM] CEASEFIRE // RTB (RETURN TO BASE)";
+          btnRtb.innerText = "🛑 [CONFIRM] CEASEFIRE // RETURN TO BASE";
           btnRtb.className = "btn btn-full btn-cyan";
           badge.innerText = "[SYS: CEASEFIRE ENFORCED]";
           badge.className = "badge badge-alert";
           title.innerText = ">> CEASEFIRE V PLATNOSTI // ZASTAVIT PALBU";
-          sub.innerText = "ROZKAZ: OKAMŽITÝ NÁVRAT NA ZÁKLADNU (RTB) A UKONČENÍ OPERACÍ";
+          sub.innerText = `ROZKAZ: RETURN TO BASE A UKONČENÍ OPERACÍ // ${intel.sub}`;
         }
 
       } else {
-        if (state.engaged) {
-          btnEng.style.display = "none";
-        } else {
+        if (!state.engaged) {
           btnEng.style.display = "block";
           btnEng.innerText = "🪂 [CONFIRM] ENGAGED";
-          btnEng.className = "btn";
         }
 
         rBtn.style.display = "block";
@@ -518,7 +604,7 @@
           badge.innerText = "[SYS: TAC RETREAT]";
           badge.className = "badge badge-orange";
           title.innerText = ">> TAC_RETREAT // POZASTAVENO";
-          sub.innerText = "DNEŠNÍ OPERACE UKONČENY // REGENERACE POVOLENA";
+          sub.innerText = `DNEŠNÍ OPERACE UKONČENY // ${intel.sub} // REGENERACE POVOLENA`;
         } else {
           rBtn.innerText = "🚁 [ABORT] TACTICAL RETREAT";
           rBtn.className = "btn btn-full btn-orange";
@@ -527,12 +613,12 @@
             badge.innerText = "[SYS: SHIELD ACTIVE]";
             badge.className = "badge";
             title.innerText = `>> EXEKUTIVNÍ ŠTÍT: D-${String(state.streak).padStart(2,'0')} V LINII`;
-            sub.innerText = "DOPAMIN POD KONTROLOU // KORTEX DRŽÍ PEVNOST BEZ RELAPSU";
+            sub.innerText = `DOPAMIN POD KONTROLOU // ${intel.sub}`;
           } else if (state.engaged) {
             badge.innerText = "[SYS: IN COMBAT]";
             badge.className = "badge";
-            title.innerText = ">> TAKTICKÝ TERMINÁL";
-            sub.innerText = "STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ";
+            title.innerText = `>> ${intel.title}`;
+            sub.innerText = `STAND DOWN VE 20:00 // ${intel.sub}`;
           } else {
             badge.innerText = "[SYS: DROP ZONE]";
             badge.className = "badge";
@@ -542,8 +628,6 @@
         }
       }
 
-      document.getElementById("btnPhd").innerText = `📡 PhD: ${state.phdHours}/3h`;
-      document.getElementById("btnExec").className = state.execConfirmedToday ? "btn btn-done" : "btn";
       document.getElementById("btnDebrief").innerText = `📻 [COMMS] TAC_DEBRIEF (${state.debriefCount}/2)`;
     }
 
