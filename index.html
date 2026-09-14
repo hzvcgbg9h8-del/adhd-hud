@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ADHD OPPS // HUD</title>
+  <title>ADHD BLACK OPPS</title>
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BLACK OPPS">
+  <meta name="theme-color" content="#030803">
+
   <style>
     :root {
       --bg: #030803;
@@ -15,7 +21,7 @@
       --alert: #ef4444;
       --orange: #ea580c;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     body {
       background-color: var(--bg);
       color: var(--text);
@@ -25,6 +31,7 @@
       justify-content: center;
       align-items: flex-start;
       padding: 16px;
+      padding-top: env(safe-area-inset-top, 20px);
     }
     .hud-terminal {
       width: 100%;
@@ -33,7 +40,7 @@
       border: 1.5px solid var(--border);
       border-radius: 12px;
       padding: 16px;
-      box-shadow: 0 0 20px rgba(34, 197, 94, 0.1);
+      box-shadow: 0 0 25px rgba(34, 197, 94, 0.15);
     }
     .header {
       display: flex;
@@ -44,20 +51,29 @@
       margin-bottom: 12px;
     }
     .badge { color: var(--accent); }
-    .badge-retreat { color: var(--orange); }
-    .countdown-box {
+    .badge-alert { color: var(--alert); }
+    .badge-orange { color: var(--orange); }
+
+    .countdown-box { margin-bottom: 14px; }
+    .countdown-title { font-size: 15px; font-weight: bold; color: #fff; }
+    .countdown-sub { font-size: 9.5px; color: var(--text-muted); margin-top: 2px; }
+
+    .tele-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      background-color: rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px;
       margin-bottom: 14px;
+      text-align: center;
+      font-size: 9px;
     }
-    .countdown-title {
-      font-size: 15px;
-      font-weight: bold;
-      color: #fff;
-    }
-    .countdown-sub {
-      font-size: 9.5px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
+    .tele-item span { display: block; }
+    .tele-label { color: var(--text-muted); font-size: 7.5px; font-weight: bold; }
+    .tele-val { font-weight: bold; margin-top: 2px; }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -74,37 +90,34 @@
       font-weight: bold;
       padding: 14px 8px;
       text-align: center;
-      text-decoration: none;
       display: block;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.1s ease;
     }
     .btn:active {
       transform: scale(0.97);
       background-color: #143a14;
       border-color: var(--accent);
     }
-    .btn-full {
-      grid-column: span 2;
+    .btn-done {
+      border-color: var(--text-muted);
+      color: var(--text-muted);
+      opacity: 0.6;
     }
+    .btn-full { grid-column: span 2; }
     .btn-orange {
       border-color: #632304;
       color: var(--orange);
       background-color: #1f0b02;
     }
-    .btn-orange:active {
-      background-color: #3b1505;
-      border-color: var(--orange);
-    }
+    .btn-orange:active { background-color: #3b1505; }
     .btn-alert {
       border-color: #551414;
       color: var(--alert);
       background-color: #1a0808;
     }
-    .btn-alert:active {
-      background-color: #330f0f;
-      border-color: var(--alert);
-    }
+    .btn-alert:active { background-color: #330f0f; }
+
     .footer {
       display: flex;
       justify-content: space-between;
@@ -114,13 +127,45 @@
       padding-top: 10px;
       margin-top: 12px;
     }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 100;
+    }
+    .modal-content {
+      background: #110505;
+      border: 1.5px solid var(--alert);
+      border-radius: 10px;
+      padding: 16px;
+      max-width: 360px;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .modal-title { color: var(--alert); font-weight: bold; font-size: 13px; margin-bottom: 8px; }
+    .modal-btn {
+      margin-top: 14px;
+      width: 100%;
+      background: #2a0a0a;
+      border: 1px solid var(--alert);
+      color: var(--alert);
+      padding: 10px;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
   <div class="hud-terminal">
     <div class="header">
-      <span>/// ADHD_OPPS // HUD</span>
+      <span>/// ADHD_OPPS // TERMINAL</span>
       <span id="sysBadge" class="badge">[SYS: IN COMBAT]</span>
     </div>
 
@@ -129,64 +174,246 @@
       <div id="hudSub" class="countdown-sub">STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ</div>
     </div>
 
+    <div class="tele-bar">
+      <div class="tele-item">
+        <span class="tele-label">MEDIC</span>
+        <span id="teleMedic" class="tele-val">STANDBY</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">OPS</span>
+        <span id="teleOps" class="tele-val">DROP ZONE</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">PhD</span>
+        <span id="telePhd" class="tele-val">0/3</span>
+      </div>
+      <div class="tele-item">
+        <span class="tele-label">EXEC</span>
+        <span id="teleExec" class="tele-val">D-00</span>
+      </div>
+    </div>
+
     <div class="grid">
-      <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=medic" class="btn">🧪 DEPLOY MEDIC</a>
-      <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=engaged" class="btn">🪂 ENGAGED</a>
-      <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=phd" class="btn">📡 PhD: +1h</a>
-      <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=exec" class="btn">🧱 EXEC_CONTROL</a>
+      <button id="btnMedic" class="btn" onclick="toggleMedic()">🧪 DEPLOY MEDIC</button>
+      <button id="btnEngage" class="btn" onclick="toggleEngage()">🪂 ENGAGED</button>
+      <button id="btnPhd" class="btn" onclick="addPhd()">📡 PhD: +1h</button>
+      <button id="btnExec" class="btn" onclick="confirmExec()">🧱 EXEC_CONTROL</button>
 
-      <!-- Jediné přepínací tlačítko s ALL-CAPS názvy -->
-      <a id="toggleRetreatBtn" href="#" class="btn btn-full"></a>
+      <button id="toggleRetreatBtn" class="btn btn-full" onclick="toggleRetreat()"></button>
 
-      <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=debrief" class="btn btn-full">📻 [COMMS] TAC_DEBRIEF (+1)</a>
-      <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=standdown" class="btn btn-full btn-alert">🚨 [PROTOCOL] STAND DOWN</a>
+      <button id="btnDebrief" class="btn btn-full" onclick="addDebrief()">📻 [COMMS] TAC_DEBRIEF (0/2)</button>
+      <button class="btn btn-full btn-alert" onclick="openStandDown()">🚨 [PROTOCOL] STAND DOWN</button>
     </div>
 
     <div class="footer">
-      <span>OBJ: MILESTONE D-12</span>
-      <span>TERAPIE: 2× / MĚSÍC</span>
+      <span id="objMilestone">OBJ: T-D DO 12.</span>
+      <span id="syncStatus">SYNC: ONLINE</span>
+    </div>
+  </div>
+
+  <div id="standDownModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">⚠️ KLID ZBRANÍ // STAND DOWN</div>
+      <p>[ZASTAVIT PALBU. ODLOŽIT MOBIL.]</p><br>
+      <p>1. Kognitivní klam: Mozek je vyčerpaný a hledá zkratku.</p>
+      <p>2. Prohra je matematická jistota. Výhra neexistuje.</p>
+      <p>3. Vypij velkou sklenici studené vody.</p>
+      <p>4. Dej si rychlý cukr (glukóza pro prefrontální kortex).</p>
+      <p>5. Pravidlo 180 vteřin: Zákaz jakékoliv finanční transakce.</p>
+      <button class="modal-btn" onclick="closeStandDown()">ROZKAZ. DRŽÍM LINII.</button>
     </div>
   </div>
 
   <script>
-    const SCRIPT_URL_BASE = "scriptable:///run?scriptName=ADHD%20BLACK%20OPPS";
-    const btn = document.getElementById("toggleRetreatBtn");
-    const badge = document.getElementById("sysBadge");
-    const title = document.getElementById("hudTitle");
-    const sub = document.getElementById("hudSub");
+    const BIN_ID = "6aa83826ffd5d16053063312";
+    const API_KEY = "$2a$10$5W9YRtTCXczTOLRzMcJf4.qnbAzWLqk.vCFU08dvkKQcVoKIduxG2";
+    const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-    let isRetreat = localStorage.getItem("adhd_hud_retreat") === "true";
+    let state = {
+      date: new Date().toISOString().slice(0, 10),
+      atomoxetin: false,
+      engaged: false,
+      phdHours: 0,
+      streak: 0,
+      execConfirmedToday: false,
+      debriefCount: 0,
+      tacticalRetreat: false
+    };
 
-    function renderState() {
-      if (isRetreat) {
-        btn.innerText = "⚡ [RE-ENGAGE] RETURN TO OPS";
-        btn.className = "btn btn-full";
-        btn.href = `${SCRIPT_URL_BASE}&action=reengage`;
-        
-        badge.innerText = "[SYS: TAC RETREAT]";
-        badge.className = "badge badge-retreat";
-        title.innerText = ">> TAC_RETREAT // POZASTAVENO";
-        sub.innerText = "DNEŠNÍ OPERACE UKONČENY // REGENERACE POVOLENA";
-      } else {
-        btn.innerText = "🚁 [ABORT] TACTICAL RETREAT";
-        btn.className = "btn btn-full btn-orange";
-        btn.href = `${SCRIPT_URL_BASE}&action=abort`;
-        
-        badge.innerText = "[SYS: IN COMBAT]";
-        badge.className = "badge";
-        title.innerText = ">> TAKTICKÝ TERMINÁL";
-        sub.innerText = "STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ";
+    async function loadCloudState() {
+      const sync = document.getElementById("syncStatus");
+      sync.innerText = "SYNC: FETCHING...";
+      try {
+        let res = await fetch(`${API_URL}/latest`, {
+          headers: { "X-Master-Key": API_KEY }
+        });
+        if (res.ok) {
+          let data = await res.json();
+          let record = data.record;
+          let today = new Date().toISOString().slice(0, 10);
+          if (record.date !== today) {
+            record.date = today;
+            record.atomoxetin = false;
+            record.engaged = false;
+            record.phdHours = 0;
+            record.execConfirmedToday = false;
+            record.tacticalRetreat = false;
+            syncCloudState(record);
+          }
+          state = record;
+          sync.innerText = "SYNC: CLOUD OK";
+        } else {
+          sync.innerText = "SYNC: OFFLINE LOCAL";
+        }
+      } catch (e) {
+        sync.innerText = "SYNC: ERR LOCAL";
+      }
+      render();
+    }
+
+    async function syncCloudState(customState = null) {
+      const targetState = customState || state;
+      const sync = document.getElementById("syncStatus");
+      sync.innerText = "SYNC: SAVING...";
+      try {
+        let res = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": API_KEY
+          },
+          body: JSON.stringify(targetState)
+        });
+        if (res.ok) {
+          sync.innerText = "SYNC: CLOUD OK";
+        } else {
+          sync.innerText = "SYNC: SAVE FAILED";
+        }
+      } catch (e) {
+        sync.innerText = "SYNC: NETWORK ERR";
       }
     }
 
-    btn.addEventListener("click", () => {
-      isRetreat = !isRetreat;
-      localStorage.setItem("adhd_hud_retreat", isRetreat);
-      renderState();
-    });
+    function toggleMedic() {
+      state.atomoxetin = !state.atomoxetin;
+      render();
+      syncCloudState();
+    }
 
-    renderState();
+    function toggleEngage() {
+      state.engaged = !state.engaged;
+      render();
+      syncCloudState();
+    }
+
+    function addPhd() {
+      state.phdHours = state.phdHours >= 3 ? 0 : state.phdHours + 1;
+      render();
+      syncCloudState();
+    }
+
+    function confirmExec() {
+      if (!state.execConfirmedToday) {
+        state.streak += 1;
+        state.execConfirmedToday = true;
+      } else {
+        state.execConfirmedToday = false;
+        state.streak = Math.max(0, state.streak - 1);
+      }
+      render();
+      syncCloudState();
+    }
+
+    function toggleRetreat() {
+      state.tacticalRetreat = !state.tacticalRetreat;
+      render();
+      syncCloudState();
+    }
+
+    function addDebrief() {
+      state.debriefCount = state.debriefCount >= 2 ? 0 : state.debriefCount + 1;
+      render();
+      syncCloudState();
+    }
+
+    function openStandDown() { document.getElementById("standDownModal").style.display = "flex"; }
+    function closeStandDown() { document.getElementById("standDownModal").style.display = "none"; }
+
+    function render() {
+      const now = new Date();
+      const hr = now.getHours();
+
+      let curD = now.getDate();
+      let diffDays = curD <= 12 ? (12 - curD) : (30 - curD + 12);
+      document.getElementById("objMilestone").innerText = `OBJ: T-${diffDays}D DO 12.`;
+
+      const tMed = document.getElementById("teleMedic");
+      tMed.innerText = state.atomoxetin ? "IN POS ✓" : "STANDBY";
+      tMed.style.color = state.atomoxetin ? "var(--accent)" : "var(--alert)";
+
+      const tOps = document.getElementById("teleOps");
+      tOps.innerText = state.engaged ? "ENGAGED ✓" : "DROP ZONE";
+      tOps.style.color = state.engaged ? "var(--accent)" : "var(--text-muted)";
+
+      const tPhd = document.getElementById("telePhd");
+      tPhd.innerText = `${state.phdHours}/3`;
+      tPhd.style.color = state.phdHours === 3 ? "var(--accent)" : "var(--text)";
+
+      const tExec = document.getElementById("teleExec");
+      tExec.innerText = `D-${String(state.streak).padStart(2,'0')} ${state.execConfirmedToday ? "✓" : "!"}`;
+      tExec.style.color = state.execConfirmedToday ? "var(--accent)" : "var(--text-muted)";
+
+      document.getElementById("btnMedic").className = state.atomoxetin ? "btn btn-done" : "btn";
+      
+      const btnEng = document.getElementById("btnEngage");
+      if (state.engaged) {
+        btnEng.innerText = "🛑 DISENGAGE // CEASEFIRE";
+        btnEng.className = "btn btn-orange";
+      } else {
+        btnEng.innerText = "🪂 ENGAGED";
+        btnEng.className = "btn";
+      }
+
+      document.getElementById("btnPhd").innerText = `📡 PhD: ${state.phdHours}/3h`;
+      document.getElementById("btnExec").className = state.execConfirmedToday ? "btn btn-done" : "btn";
+      document.getElementById("btnDebrief").innerText = `📻 [COMMS] TAC_DEBRIEF (${state.debriefCount}/2)`;
+
+      const rBtn = document.getElementById("toggleRetreatBtn");
+      const badge = document.getElementById("sysBadge");
+      const title = document.getElementById("hudTitle");
+      const sub = document.getElementById("hudSub");
+
+      if (state.tacticalRetreat) {
+        rBtn.innerText = "⚡ [RE-ENGAGE] RETURN TO OPS";
+        rBtn.className = "btn btn-full";
+        badge.innerText = "[SYS: TAC RETREAT]";
+        badge.className = "badge badge-orange";
+        title.innerText = ">> TAC_RETREAT // POZASTAVENO";
+        sub.innerText = "DNEŠNÍ OPERACE UKONČENY // REGENERACE POVOLENA";
+      } else {
+        rBtn.innerText = "🚁 [ABORT] TACTICAL RETREAT";
+        rBtn.className = "btn btn-full btn-orange";
+        
+        if (hr >= 20) {
+          badge.innerText = "[SYS: CEASEFIRE]";
+          badge.className = "badge badge-alert";
+          title.innerText = ">> STAND DOWN // 20:00 LIMIT";
+          sub.innerText = "ROZKAZ CEASEFIRE V PLATNOSTI // STOP OPERACÍM";
+        } else if (state.engaged) {
+          badge.innerText = "[SYS: IN COMBAT]";
+          badge.className = "badge";
+          title.innerText = ">> TAKTICKÝ TERMINÁL";
+          sub.innerText = "STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ";
+        } else {
+          badge.innerText = "[SYS: DROP ZONE]";
+          badge.className = "badge";
+          title.innerText = ">> PŘÍPRAVA NA VÝSADEK";
+          sub.innerText = "POTVRĎ MEDIC A ENGAGED PŘED ZAHÁJENÍM";
+        }
+      }
+    }
+
+    loadCloudState();
   </script>
-
 </body>
 </html>
