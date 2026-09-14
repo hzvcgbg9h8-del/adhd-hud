@@ -44,6 +44,7 @@
       margin-bottom: 12px;
     }
     .badge { color: var(--accent); }
+    .badge-retreat { color: var(--orange); }
     .countdown-box {
       margin-bottom: 14px;
     }
@@ -86,6 +87,15 @@
     .btn-full {
       grid-column: span 2;
     }
+    .btn-orange {
+      border-color: #632304;
+      color: var(--orange);
+      background-color: #1f0b02;
+    }
+    .btn-orange:active {
+      background-color: #3b1505;
+      border-color: var(--orange);
+    }
     .btn-alert {
       border-color: #551414;
       color: var(--alert);
@@ -111,12 +121,12 @@
   <div class="hud-terminal">
     <div class="header">
       <span>/// ADHD_OPPS // HUD</span>
-      <span class="badge">[SYS: IN COMBAT]</span>
+      <span id="sysBadge" class="badge">[SYS: IN COMBAT]</span>
     </div>
 
     <div class="countdown-box">
-      <div class="countdown-title">&gt;&gt; TAKTICKÝ TERMINÁL</div>
-      <div class="countdown-sub">STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ</div>
+      <div id="hudTitle" class="countdown-title">&gt;&gt; TAKTICKÝ TERMINÁL</div>
+      <div id="hudSub" class="countdown-sub">STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ</div>
     </div>
 
     <div class="grid">
@@ -124,8 +134,10 @@
       <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=engaged" class="btn">🪂 ENGAGED</a>
       <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=phd" class="btn">📡 PhD: +1h</a>
       <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=exec" class="btn">🧱 EXEC_CONTROL</a>
-      <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=retreat" class="btn btn-full">🚁 TAC_RETREAT</a>
-      <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=abort" class="btn btn-full">⚡ [ABORT] RETURN TO OPS</a>
+
+      <!-- Jediné přepínací tlačítko s ALL-CAPS názvy -->
+      <a id="toggleRetreatBtn" href="#" class="btn btn-full"></a>
+
       <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=debrief" class="btn btn-full">📻 [COMMS] TAC_DEBRIEF (+1)</a>
       <a href="scriptable:///run?scriptName=ADHD%20BLACK%20OPPS&action=standdown" class="btn btn-full btn-alert">🚨 [PROTOCOL] STAND DOWN</a>
     </div>
@@ -135,6 +147,46 @@
       <span>TERAPIE: 2× / MĚSÍC</span>
     </div>
   </div>
+
+  <script>
+    const SCRIPT_URL_BASE = "scriptable:///run?scriptName=ADHD%20BLACK%20OPPS";
+    const btn = document.getElementById("toggleRetreatBtn");
+    const badge = document.getElementById("sysBadge");
+    const title = document.getElementById("hudTitle");
+    const sub = document.getElementById("hudSub");
+
+    let isRetreat = localStorage.getItem("adhd_hud_retreat") === "true";
+
+    function renderState() {
+      if (isRetreat) {
+        btn.innerText = "⚡ [RE-ENGAGE] RETURN TO OPS";
+        btn.className = "btn btn-full";
+        btn.href = `${SCRIPT_URL_BASE}&action=reengage`;
+        
+        badge.innerText = "[SYS: TAC RETREAT]";
+        badge.className = "badge badge-retreat";
+        title.innerText = ">> TAC_RETREAT // POZASTAVENO";
+        sub.innerText = "DNEŠNÍ OPERACE UKONČENY // REGENERACE POVOLENA";
+      } else {
+        btn.innerText = "🚁 [ABORT] TACTICAL RETREAT";
+        btn.className = "btn btn-full btn-orange";
+        btn.href = `${SCRIPT_URL_BASE}&action=abort`;
+        
+        badge.innerText = "[SYS: IN COMBAT]";
+        badge.className = "badge";
+        title.innerText = ">> TAKTICKÝ TERMINÁL";
+        sub.innerText = "STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ";
+      }
+    }
+
+    btn.addEventListener("click", () => {
+      isRetreat = !isRetreat;
+      localStorage.setItem("adhd_hud_retreat", isRetreat);
+      renderState();
+    });
+
+    renderState();
+  </script>
 
 </body>
 </html>
