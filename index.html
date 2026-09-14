@@ -13,11 +13,11 @@
   <style>
     :root {
       --bg: #000000;
-      --card: #121316;
-      --card-inner: #1c1d22;
-      --border: #26282e;
+      --card: #0d0e11;
+      --card-inner: #16181d;
+      --border: #22252c;
       --text: #ffffff;
-      --text-muted: #8a8f98;
+      --text-muted: #8e94a0;
       --accent: #30d158;
       --warn: #ff9f0a;
       --alert: #ff453a;
@@ -37,14 +37,14 @@
       height: 100dvh;
       background-color: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      font-family: ui-monospace, 'Menlo', 'Courier New', monospace;
       overflow: hidden;
     }
 
     body {
       display: flex;
       flex-direction: column;
-      padding: calc(env(safe-area-inset-top, 10px) + 2px) 12px calc(env(safe-area-inset-bottom, 10px) + 4px) 12px;
+      padding: calc(env(safe-area-inset-top, 10px) + 2px) 10px calc(env(safe-area-inset-bottom, 10px) + 4px) 10px;
       justify-content: space-between;
     }
 
@@ -52,18 +52,18 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      gap: 10px;
+      gap: 8px;
     }
 
-    /* 1. HORNÍ HUD BLOK */
+    /* 1. HORNÍ HUD PANEL */
     .hud-header {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 12px 14px;
+      border-radius: 10px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       flex-shrink: 0;
     }
 
@@ -71,43 +71,40 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 11px;
+      font-size: 9.5px;
       font-weight: 700;
-      font-family: ui-monospace, Menlo, monospace;
     }
 
-    .tag-title { color: var(--text-muted); letter-spacing: 0.5px; }
+    .tag-title { color: var(--text-muted); }
 
     .badge {
-      padding: 2px 7px;
+      padding: 2px 6px;
       border-radius: 4px;
       background: rgba(48, 209, 88, 0.12);
       color: var(--accent);
       font-weight: 700;
-      font-size: 10px;
+      font-size: 9.5px;
     }
     .badge-warn { background: rgba(255, 159, 10, 0.15); color: var(--warn); }
     .badge-alert { background: rgba(255, 69, 58, 0.15); color: var(--alert); }
 
     .hud-headline {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 700;
       color: var(--text);
       line-height: 1.25;
-      letter-spacing: -0.2px;
     }
     .hud-subline {
-      font-size: 10.5px;
+      font-size: 9px;
       color: var(--text-muted);
-      font-family: ui-monospace, Menlo, monospace;
     }
 
     /* TELEMETRIE */
     .tele-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      padding-top: 8px;
+      gap: 5px;
+      padding-top: 6px;
       border-top: 1px solid var(--border);
     }
     .tele-col {
@@ -115,90 +112,67 @@
       flex-direction: column;
       align-items: center;
       background: var(--card-inner);
-      padding: 5px 2px;
+      padding: 4px 2px;
       border-radius: 6px;
     }
     .tele-lbl {
-      font-size: 8px;
+      font-size: 7.5px;
       font-weight: 700;
       color: var(--text-muted);
-      font-family: ui-monospace, Menlo, monospace;
     }
     .tele-val {
-      font-size: 10.5px;
+      font-size: 9.5px;
       font-weight: 700;
       margin-top: 2px;
-      font-family: ui-monospace, Menlo, monospace;
     }
 
-    /* 2. HLAVNÍ OBLAST TLAČÍTEK */
+    /* 2. OBLAST TLAČÍTEK */
     .controls-zone {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       flex: 1;
       justify-content: flex-start;
-      overflow-y: auto;
     }
 
     .row-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
     }
 
-    .btn-cell {
-      height: 52px;
+    .btn {
+      width: 100%;
+      height: 48px;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 8px;
       color: var(--text);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 700;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 14px;
+      justify-content: center;
+      text-align: center;
+      padding: 0 8px;
       cursor: pointer;
       transition: background-color 0.1s;
     }
-    .btn-cell:active {
+    .btn:active {
       transform: scale(0.985);
       background: var(--card-inner);
     }
 
-    .btn-main-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-    .btn-ico { font-size: 17px; flex-shrink: 0; }
-    .btn-txt {
-      font-size: 12.5px;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .btn-tag {
-      font-size: 10.5px;
-      font-weight: 700;
-      color: var(--text-muted);
-      font-family: ui-monospace, Menlo, monospace;
-      flex-shrink: 0;
-      margin-left: 8px;
-    }
-
-    /* SPECIFICKÉ STAVY TLAČÍTEK */
     .btn-done {
       background: rgba(255, 255, 255, 0.02);
       border-color: var(--border);
       color: var(--text-muted);
     }
-    .btn-done .btn-tag { color: var(--accent); }
-
     .btn-locked {
       cursor: default !important;
       pointer-events: none !important;
+      opacity: 0.9 !important;
     }
 
     .btn-warn {
@@ -206,39 +180,35 @@
       background: rgba(255, 159, 10, 0.08);
       color: var(--warn);
     }
-    .btn-warn .btn-tag { color: var(--warn); }
 
     .btn-alert {
       border-color: rgba(255, 69, 58, 0.4);
       background: rgba(255, 69, 58, 0.08);
       color: var(--alert);
     }
-    .btn-alert .btn-tag { color: var(--alert); }
 
     .btn-reward {
       border-color: rgba(255, 159, 10, 0.6);
       background: rgba(255, 159, 10, 0.12);
       color: #fff;
     }
-    .btn-reward .btn-tag { color: var(--warn); }
 
     /* 3. PATIČKA */
     .footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 12px;
+      padding: 6px 10px;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 9px;
+      border-radius: 6px;
+      font-size: 8.5px;
       font-weight: 600;
       color: var(--text-muted);
-      font-family: ui-monospace, Menlo, monospace;
       flex-shrink: 0;
     }
 
-    /* MODÁLY */
+    /* MODÁLNÍ DIALOGY */
     .modal {
       display: none;
       position: fixed;
@@ -251,24 +221,24 @@
     }
     .modal-box {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
       padding: 16px;
       width: 100%;
       max-width: 320px;
-      font-size: 11.5px;
+      font-size: 11px;
       line-height: 1.5;
     }
-    .modal-title { font-weight: 700; font-size: 13px; margin-bottom: 8px; }
+    .modal-title { font-weight: 700; font-size: 12px; margin-bottom: 8px; }
     .modal-btn {
-      margin-top: 10px;
+      margin-top: 8px;
       width: 100%;
-      height: 44px;
-      border-radius: 8px;
+      height: 42px;
+      border-radius: 6px;
       font-weight: 700;
       cursor: pointer;
       border: 1px solid transparent;
-      font-size: 12px;
+      font-size: 11px;
       font-family: inherit;
     }
     .btn-m-safe { background: rgba(48,209,88,0.15); border-color: var(--accent); color: var(--accent); }
@@ -283,11 +253,11 @@
     <div class="hud-header">
       <div class="hud-topline">
         <span class="tag-title">/// BLACK_OPPS // TERMINÁL</span>
-        <span id="sysBadge" class="badge">SYS: IN COMBAT</span>
+        <span id="sysBadge" class="badge">[SYS: IN COMBAT]</span>
       </div>
 
       <div>
-        <div id="hudTitle" class="hud-headline">&gt;&gt; TAKTICKÝ TERMINÁL AKTIVNÍ</div>
+        <div id="hudTitle" class="hud-headline">&gt;&gt; OPERAČNÍ TERMINÁL AKTIVNÍ</div>
         <div id="hudSub" class="hud-subline">STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ</div>
       </div>
 
@@ -311,102 +281,29 @@
       </div>
     </div>
 
-    <!-- OBLAST AKCÍ -->
+    <!-- OBLAST TLAČÍTEK -->
     <div class="controls-zone">
-      <!-- 1. ŘÁDEK: MEDIC & PhD -->
       <div class="row-split">
-        <button id="btnMedic" class="btn-cell" onclick="toggleMedic()">
-          <div class="btn-main-info">
-            <span class="btn-ico">🧪</span>
-            <span class="btn-txt">DEPLOY MEDIC</span>
-          </div>
-          <span id="tagMedic" class="btn-tag">STANDBY</span>
-        </button>
-
-        <button id="btnPhd" class="btn-cell" onclick="addPhd()">
-          <div class="btn-main-info">
-            <span class="btn-ico">📡</span>
-            <span class="btn-txt">PhD VÝZKUM</span>
-          </div>
-          <span id="tagPhd" class="btn-tag">0/3</span>
-        </button>
+        <button id="btnMedic" class="btn" onclick="toggleMedic()">🧪 [DEPLOY MEDIC]</button>
+        <button id="btnPhd" class="btn" onclick="addPhd()">📡 [INTEL] PhD (+1H)</button>
       </div>
 
-      <!-- 2. ŘÁDEK: OPERAČNÍ BLOK (VÝSADEK) -->
-      <button id="btnEngage" class="btn-cell" onclick="confirmEngaged()">
-        <div class="btn-main-info">
-          <span class="btn-ico">🪂</span>
-          <span class="btn-txt">[CONFIRM] ENGAGED</span>
-        </div>
-        <span id="tagEngage" class="btn-tag">VÝSADEK</span>
-      </button>
+      <button id="btnEngage" class="btn" onclick="confirmEngaged()">🪂 [CONFIRM] ENGAGED</button>
+      <button id="btnExecShield" class="btn" onclick="confirmExec()">🧱 [SHIELD] EXECUTIVE CONTROL</button>
 
-      <!-- 3. ŘÁDEK: EXEKUTIVNÍ ŠTÍT -->
-      <button id="btnExecShield" class="btn-cell" onclick="confirmExec()">
-        <div class="btn-main-info">
-          <span class="btn-ico">🧱</span>
-          <span class="btn-txt">EXECUTIVE CONTROL</span>
-        </div>
-        <span id="tagExec" class="btn-tag">POTVRDIT</span>
-      </button>
+      <button id="btnRetreat" class="btn btn-warn" onclick="toggleRetreat()">🚁 [ABORT] TACTICAL RETREAT</button>
 
-      <!-- 4. ŘÁDEK: TAKTICKÝ ÚSTUP -->
-      <button id="btnRetreat" class="btn-cell btn-warn" onclick="toggleRetreat()">
-        <div class="btn-main-info">
-          <span class="btn-ico">🚁</span>
-          <span id="txtRetreat" class="btn-txt">[ABORT] TACTICAL RETREAT</span>
-        </div>
-        <span id="tagRetreat" class="btn-tag">ÚSTUP</span>
-      </button>
+      <!-- Večerní a noční tlačítka -->
+      <button id="btnCeasefireRtb" class="btn btn-warn" style="display: none;" onclick="confirmCeasefireRtb()">🛑 [CONFIRM] CEASEFIRE // RETURN TO BASE</button>
+      <button id="btnFinalLockdown" class="btn btn-warn" style="display: none;" onclick="openIntegrityModal()">🚨 [POSSIBLE BREACH ALERT] VERIFY EXEC INTEGRITY</button>
+      <button id="btnLightsOut" class="btn" style="display: none;" onclick="recordLightsOut()">🌙 [PROTOCOL] LIGHTS OUT // JÍT SPÁT</button>
 
-      <!-- 5. ŘÁDEK: CEASEFIRE (VEČER PO 20:00) -->
-      <button id="btnCeasefireRtb" class="btn-cell btn-warn" style="display: none;" onclick="confirmCeasefireRtb()">
-        <div class="btn-main-info">
-          <span class="btn-ico">🛑</span>
-          <span id="txtCeasefire" class="btn-txt">[CONFIRM] CEASEFIRE RTB</span>
-        </div>
-        <span id="tagCeasefire" class="btn-tag">UKONČIT</span>
-      </button>
-
-      <!-- 6. ŘÁDEK: NOČNÍ VERIFIKACE INTEGRITY -->
-      <button id="btnFinalLockdown" class="btn-cell btn-warn" style="display: none;" onclick="openIntegrityModal()">
-        <div class="btn-main-info">
-          <span id="icoLockdown" class="btn-ico">🚨</span>
-          <span id="txtLockdown" class="btn-txt">VERIFIKACE INTEGRITY</span>
-        </div>
-        <span id="tagLockdown" class="btn-tag">OVĚŘIT</span>
-      </button>
-
-      <!-- 7. ŘÁDEK: LIGHTS OUT (VEČERKA) -->
-      <button id="btnLightsOut" class="btn-cell" style="display: none;" onclick="recordLightsOut()">
-        <div class="btn-main-info">
-          <span class="btn-ico">🌙</span>
-          <span id="txtNight" class="btn-txt">PROTOKOL LIGHTS OUT</span>
-        </div>
-        <span id="tagNight" class="btn-tag">JÍT SPÁT</span>
-      </button>
-
-      <!-- 8. ŘÁDEK: DEBRIEF & STAND DOWN -->
-      <div class="row-split">
-        <button id="btnDebrief" class="btn-cell" onclick="openDebriefModal()">
-          <div class="btn-main-info">
-            <span class="btn-ico">📻</span>
-            <span class="btn-txt">DEBRIEF</span>
-          </div>
-          <span id="tagDebrief" class="btn-tag">0/2</span>
-        </button>
-
-        <button class="btn-cell btn-alert" onclick="openStandDown()">
-          <div class="btn-main-info">
-            <span class="btn-ico">🚨</span>
-            <span class="btn-txt">STAND DOWN</span>
-          </div>
-          <span class="btn-tag">STOP</span>
-        </button>
-      </div>
+      <!-- Debrief a Stand down -->
+      <button id="btnDebrief" class="btn" onclick="openDebriefModal()">📻 [COMMS] TACTICAL DEBRIEF [□□ 0/2]</button>
+      <button class="btn btn-alert" onclick="openStandDown()">🚨 [PROTOCOL] STAND DOWN</button>
     </div>
 
-    <!-- SPODNÍ SYSTÉMOVÁ LIŠTA -->
+    <!-- PATIČKA -->
     <div class="footer">
       <span id="objMilestone">OBJ: T-D DO 12.</span>
       <span id="sleepStat">BED: --:--</span>
@@ -416,36 +313,37 @@
 
   <!-- MODAL: STAND DOWN -->
   <div id="standDownModal" class="modal">
-    <div class="modal-box" style="border-color: var(--alert);">
+    <div class="modal-box" style="border-color: var(--alert); background: #140808;">
       <div class="modal-title" style="color: var(--alert);">⚠️ KLID ZBRANÍ // STAND DOWN</div>
       <p>[ZASTAVIT PALBU. ODLOŽIT MOBIL.]</p><br>
-      <p>1. <strong>Klam kortexu:</strong> Mozek hledá laciný dopamin.</p>
-      <p>2. <strong>Jistota:</strong> Prohra je matematická, výhra neexistuje.</p>
-      <p>3. <strong>Reset:</strong> Vypij sklenici vody a dej si glukózu.</p>
-      <p>4. <strong>180 vteřin:</strong> Zákaz jakékoliv akce během odpočtu.</p>
+      <p>1. Kognitivní klam: Mozek je vyčerpaný a hledá zkratku.</p>
+      <p>2. Prohra je matematická jistota. Výhra neexistuje.</p>
+      <p>3. Vypij velkou sklenici studené vody.</p>
+      <p>4. Dej si rychlý cukr (glukóza pro prefrontální kortex).</p>
+      <p>5. Pravidlo 180 vteřin: Zákaz jakékoliv neautorizované akce.</p>
       <button class="modal-btn btn-m-alert" onclick="closeStandDown()">ROZKAZ. DRŽÍM LINII.</button>
     </div>
   </div>
 
-  <!-- MODAL: VERIFIKACE INTEGRITY -->
+  <!-- MODAL: INTEGRITY LOCKDOWN -->
   <div id="integrityModal" class="modal">
     <div class="modal-box">
       <div class="modal-title" style="color: var(--accent);">🛡️ VERIFIKACE EXECUTIVE CONTROL</div>
       <p>[ZÁVĚREČNÁ PROVĚRKA CELÉHO DNE]</p><br>
-      <p>Byla obranná linie kortexu udržena bez prolomení, ztráty kontroly a neautorizovaných aktivit?</p>
-      <button class="modal-btn btn-m-safe" onclick="resolveIntegrity(true)">🛡️ LINIE UDRŽENA (+1 STREAK)</button>
-      <button class="modal-btn btn-m-alert" onclick="resolveIntegrity(false)">❌ PERIMETR PROLOMEN (RESET)</button>
+      <p>Byla obranná linie kortexu udržena po celý den a večer bez infiltrace, ztráty sebekontroly a neautorizovaných aktivit?</p>
+      <button class="modal-btn btn-m-safe" onclick="resolveIntegrity(true)">🛡️ [PERIMETER INTACT] LINIE UDRŽENA (+1 STREAK)</button>
+      <button class="modal-btn btn-m-alert" onclick="resolveIntegrity(false)">❌ [BREACH CONFIRMED] PERIMETR PROLOMEN (MISSION FAILED)</button>
       <button class="modal-btn btn-m-cancel" onclick="closeIntegrityModal()">ZRUŠIT</button>
     </div>
   </div>
 
   <!-- MODAL: TACTICAL DEBRIEF -->
   <div id="debriefModal" class="modal">
-    <div class="modal-box">
-      <div class="modal-title" style="color: var(--accent);">📻 TAKTICKÝ DEBRIEF</div>
+    <div class="modal-box" style="border-color: var(--accent);">
+      <div class="modal-title" style="color: var(--accent);">📻 POTVRZENÍ TACTICAL DEBRIEF</div>
       <p>[MENTÁLNÍ REKALIBRACE JEDNOTKY]</p><br>
-      <p>Potvrdit absolvování mentální rekalibrace s velením? (+1 k měsíční kvótě 2/2)</p>
-      <button class="modal-btn btn-m-safe" onclick="confirmDebriefSuccess()">✅ POTVRDIT REKALIBRACI</button>
+      <p>Potvrdit absolvování mentální rekalibrace jednotky? (+1 k měsíční kvótě DEBRIEF 2/2)</p>
+      <button class="modal-btn btn-m-safe" onclick="confirmDebriefSuccess()">✅ [CONFIRM] REKALIBRACE DOKONČENA</button>
       <button class="modal-btn btn-m-cancel" onclick="closeDebriefModal()">ZRUŠIT</button>
     </div>
   </div>
@@ -472,7 +370,8 @@
       debriefCount: 0,
       tacticalRetreat: false,
       bedtime: null,
-      sleepHistory: []
+      sleepHistory: [],
+      debriefResetDone: false
     };
 
     async function loadCloudState() {
@@ -486,10 +385,20 @@
           let today = getTodayStr();
           let thisMonth = getCurrentMonthStr();
 
+          let needsSync = false;
+
+          // HARD-RESET DEBRIEFU: Vynuluje starou hodnotu z cloudu
+          if (!record.debriefResetDone) {
+            record.debriefCount = 0;
+            record.debriefResetDone = true;
+            needsSync = true;
+          }
+
           if (!record.sleepHistory) record.sleepHistory = [];
           if (!record.currentMonth || record.currentMonth !== thisMonth) {
             record.currentMonth = thisMonth;
             record.debriefCount = 0;
+            needsSync = true;
           }
 
           if (record.date !== today) {
@@ -503,9 +412,13 @@
             record.integrityLocked = false;
             record.tacticalRetreat = false;
             record.bedtime = null;
+            needsSync = true;
+          }
+
+          state = record;
+          if (needsSync) {
             syncCloudState(record);
           }
-          state = record;
           sync.innerText = "SYNC: OK";
         }
       } catch (e) {
@@ -602,6 +515,8 @@
 
     function resolveIntegrity(isSuccess) {
       closeIntegrityModal();
+      if (state.integrityLocked) return;
+
       state.integrityLocked = true;
       if (isSuccess) {
         if (!state.execConfirmedToday) {
@@ -673,41 +588,22 @@
 
       // 2. TLAČÍTKA MEDIC & PhD
       const bMedic = document.getElementById("btnMedic");
-      const tagMedic = document.getElementById("tagMedic");
-      if (state.atomoxetin) {
-        bMedic.className = "btn-cell btn-done";
-        tagMedic.innerText = "IN POS ✓";
-      } else {
-        bMedic.className = "btn-cell";
-        tagMedic.innerText = "STANDBY";
-      }
+      bMedic.innerText = state.atomoxetin ? "🧪 [MEDIC: IN POS ✓]" : "🧪 [DEPLOY MEDIC]";
+      bMedic.className = "btn" + (state.atomoxetin ? " btn-done" : "");
 
       const bPhd = document.getElementById("btnPhd");
-      const tagPhd = document.getElementById("tagPhd");
-      tagPhd.innerText = `${state.phdHours}/3`;
-      bPhd.className = "btn-cell" + (state.phdHours === 3 ? " btn-done" : "");
+      let phdBlocks = "";
+      for (let i = 1; i <= 3; i++) phdBlocks += (i <= state.phdHours) ? "■" : "□";
+      bPhd.innerText = state.phdHours === 3 ? "📡 [INTEL] PhD [3/3 ✓]" : `📡 [INTEL] PhD [${phdBlocks} ${state.phdHours}/3]`;
+      bPhd.className = "btn" + (state.phdHours === 3 ? " btn-done" : "");
 
       // 3. OVLÁDACÍ TLAČÍTKA & HUD HLÁŠENÍ
       const bEngage = document.getElementById("btnEngage");
-      const tagEngage = document.getElementById("tagEngage");
       const bExec = document.getElementById("btnExecShield");
-      const tagExec = document.getElementById("tagExec");
       const bRetreat = document.getElementById("btnRetreat");
-      const txtRetreat = document.getElementById("txtRetreat");
-      const tagRetreat = document.getElementById("tagRetreat");
-
       const bCeasefire = document.getElementById("btnCeasefireRtb");
-      const txtCeasefire = document.getElementById("txtCeasefire");
-      const tagCeasefire = document.getElementById("tagCeasefire");
-
       const bLockdown = document.getElementById("btnFinalLockdown");
-      const icoLockdown = document.getElementById("icoLockdown");
-      const txtLockdown = document.getElementById("txtLockdown");
-      const tagLockdown = document.getElementById("tagLockdown");
-
       const bNight = document.getElementById("btnLightsOut");
-      const txtNight = document.getElementById("txtNight");
-      const tagNight = document.getElementById("tagNight");
 
       const badge = document.getElementById("sysBadge");
       const title = document.getElementById("hudTitle");
@@ -726,48 +622,38 @@
         bNight.style.display = "flex";
 
         if (state.bedtime) {
-          bNight.className = "btn-cell btn-done btn-locked";
-          txtNight.innerText = `LIGHTS OUT (${state.bedtime})`;
-          tagNight.innerText = "ULOŽENO";
+          bNight.innerText = `🌙 [RECORDED] LIGHTS OUT (${state.bedtime} ✓)`;
+          bNight.className = "btn btn-done btn-locked";
         } else {
-          bNight.className = "btn-cell";
-          txtNight.innerText = "PROTOKOL LIGHTS OUT";
-          tagNight.innerText = "JÍT SPÁT";
+          bNight.innerText = "🌙 [PROTOCOL] LIGHTS OUT // JÍT SPÁT";
+          bNight.className = "btn";
         }
 
         if (state.execFailedToday) {
-          bLockdown.className = "btn-cell btn-alert btn-locked";
-          icoLockdown.innerText = "🚨";
-          txtLockdown.innerText = "PERIMETR PROLOMEN";
-          tagLockdown.innerText = "FAILED";
-          badge.innerText = "SYS: MISSION FAILED";
+          bLockdown.innerText = "🚨 [MISSION FAILED] PERIMETER BREACHED";
+          bLockdown.className = "btn btn-alert btn-locked";
+          badge.innerText = "[SYS: MISSION FAILED]";
           badge.className = "badge badge-alert";
-          title.innerText = ">> DEFENSE PERIMETER BREACHED";
+          title.innerText = ">> DEFENSE PERIMETER BREACHED // FAILED";
           sub.innerText = "EXEKUTIVNÍ KONTROLA KOMPROMITOVÁNA";
         } else if (state.integrityLocked && allObjectivesDone) {
-          bLockdown.className = "btn-cell btn-reward btn-locked";
-          icoLockdown.innerText = "🏆";
-          txtLockdown.innerText = "MISSION ACCOMPLISHED";
-          tagLockdown.innerText = "SPLNĚNO";
-          badge.innerText = "SYS: MISSION ACCOMPLISHED";
+          bLockdown.innerText = "🏆 [ALL OBJECTIVES SECURED] MISSION ACCOMPLISHED";
+          bLockdown.className = "btn btn-reward btn-locked";
+          badge.innerText = "[SYS: MISSION ACCOMPLISHED]";
           badge.className = "badge badge-warn";
           title.innerText = ">> DNEŠNÍ BITVA VYHRÁNA // LINIE UDRŽENA";
           sub.innerText = "ŽÁDNÉ ZTRÁTY // REGENERACE POVOLENA";
         } else if (state.integrityLocked) {
-          bLockdown.className = "btn-cell btn-done btn-locked";
-          icoLockdown.innerText = "🔒";
-          txtLockdown.innerText = "BASE LOCKDOWN";
-          tagLockdown.innerText = "LOCKED";
-          badge.innerText = "SYS: BASE LOCKDOWN";
+          bLockdown.innerText = "🔒 [BASE LOCKDOWN] PERIMETER SECURED";
+          bLockdown.className = "btn btn-done btn-locked";
+          badge.innerText = "[SYS: BASE LOCKDOWN]";
           badge.className = "badge";
           title.innerText = ">> BASE LOCKDOWN // KONTROLA UDRŽENA";
           sub.innerText = "EXEKUTIVA ZAJIŠTĚNA";
         } else {
-          bLockdown.className = "btn-cell btn-warn";
-          icoLockdown.innerText = "🚨";
-          txtLockdown.innerText = "VERIFIKACE INTEGRITY";
-          tagLockdown.innerText = "OVĚŘIT";
-          badge.innerText = "SYS: VERIFY REQUIRED";
+          bLockdown.innerText = "🚨 [POSSIBLE BREACH ALERT] VERIFY EXEC INTEGRITY";
+          bLockdown.className = "btn btn-warn";
+          badge.innerText = "[SYS: VERIFY REQUIRED]";
           badge.className = "badge badge-warn";
           title.innerText = ">> BASE LOCKDOWN // ČEKÁ SE NA VERIFIKACI";
           sub.innerText = "POTVRĎ INTEGRITU PERIMETRU";
@@ -777,18 +663,16 @@
         bCeasefire.style.display = "flex";
 
         if (state.ceasefireConfirmed) {
-          bCeasefire.className = "btn-cell btn-done";
-          txtCeasefire.innerText = "SECURED AT BASE";
-          tagCeasefire.innerText = "ZAJIŠTĚNO";
-          badge.innerText = "SYS: AT BASE";
+          bCeasefire.innerText = "🛡️ [SECURED AT BASE] CEASEFIRE ACTIVE ✓";
+          bCeasefire.className = "btn btn-done";
+          badge.innerText = "[SYS: AT BASE]";
           badge.className = "badge";
           title.innerText = ">> CEASEFIRE UDRŽEN // PERIMETR ZAJIŠTĚN";
-          sub.innerText = "BOJOVÝ KONTAKT PŘERUŠEN // DEKOMPRESE";
+          sub.innerText = "BOJOVÝ KONTAKT PŘERUŠEN // DEKOMPRESE JEDNOTKY";
         } else {
-          bCeasefire.className = "btn-cell btn-warn";
-          txtCeasefire.innerText = "CEASEFIRE // RETURN TO BASE";
-          tagCeasefire.innerText = "UKONČIT";
-          badge.innerText = "SYS: CEASEFIRE";
+          bCeasefire.innerText = "🛑 [CONFIRM] CEASEFIRE // RETURN TO BASE";
+          bCeasefire.className = "btn btn-warn";
+          badge.innerText = "[SYS: CEASEFIRE]";
           badge.className = "badge badge-warn";
           title.innerText = ">> CEASEFIRE V PLATNOSTI // ZASTAVIT PALBU";
           sub.innerText = "ROZKAZ: RETURN TO BASE A UKONČENÍ OPERACÍ";
@@ -799,47 +683,35 @@
         bExec.style.display = "flex";
         bRetreat.style.display = "flex";
 
-        if (state.engaged) {
-          bEngage.className = "btn-cell btn-done";
-          tagEngage.innerText = "AKTIVNÍ ✓";
-        } else {
-          bEngage.className = "btn-cell";
-          tagEngage.innerText = "VÝSADEK";
-        }
+        bEngage.innerText = state.engaged ? "🪂 [ENGAGED ✓]" : "🪂 [CONFIRM] ENGAGED";
+        bEngage.className = "btn" + (state.engaged ? " btn-done" : "");
 
-        if (state.execConfirmedToday) {
-          bExec.className = "btn-cell btn-done";
-          tagExec.innerText = `D-${String(state.streak).padStart(2,'0')} ✓`;
-        } else {
-          bExec.className = "btn-cell";
-          tagExec.innerText = "POTVRDIT";
-        }
+        bExec.innerText = state.execConfirmedToday ? `🧱 [SHIELD: D-${String(state.streak).padStart(2,'0')} ACTIVE ✓]` : "🧱 [SHIELD] EXECUTIVE CONTROL";
+        bExec.className = "btn" + (state.execConfirmedToday ? " btn-done" : "");
 
         if (state.tacticalRetreat) {
-          txtRetreat.innerText = "[RE-ENGAGE] RETURN TO OPS";
-          tagRetreat.innerText = "NÁVRAT";
-          bRetreat.className = "btn-cell";
-          badge.innerText = "SYS: TAC RETREAT";
+          bRetreat.innerText = "⚡ [RE-ENGAGE] RETURN TO OPS";
+          bRetreat.className = "btn";
+          badge.innerText = "[SYS: TAC RETREAT]";
           badge.className = "badge badge-warn";
           title.innerText = ">> TAC_RETREAT // POZASTAVENO";
-          sub.innerText = "DNEŠNÍ OPERACE UKONČENY";
+          sub.innerText = "DNEŠNÍ OPERACE UKONČENY // REGENERACE POVOLENA";
         } else {
-          txtRetreat.innerText = "[ABORT] TACTICAL RETREAT";
-          tagRetreat.innerText = "ÚSTUP";
-          bRetreat.className = "btn-cell btn-warn";
+          bRetreat.innerText = "🚁 [ABORT] TACTICAL RETREAT";
+          bRetreat.className = "btn btn-warn";
 
           if (state.execConfirmedToday) {
-            badge.innerText = "SYS: SHIELD ACTIVE";
+            badge.innerText = "[SYS: SHIELD ACTIVE]";
             badge.className = "badge";
             title.innerText = `>> EXEKUTIVNÍ ŠTÍT: D-${String(state.streak).padStart(2,'0')} V LINII`;
             sub.innerText = "DISCIPLÍNA ZAJIŠTĚNA // PERIMETR STABILNÍ";
           } else if (state.engaged) {
-            badge.innerText = "SYS: IN COMBAT";
+            badge.innerText = "[SYS: IN COMBAT]";
             badge.className = "badge badge-alert";
             title.innerText = ">> OPERAČNÍ TERMINÁL AKTIVNÍ";
             sub.innerText = "STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ";
           } else {
-            badge.innerText = "SYS: DROP ZONE";
+            badge.innerText = "[SYS: DROP ZONE]";
             badge.className = "badge";
             title.innerText = ">> PŘÍPRAVA NA VÝSADEK";
             sub.innerText = "POTVRĎ MEDIC A ENGAGED PŘED ZAHÁJENÍM";
@@ -847,11 +719,12 @@
         }
       }
 
-      // 4. DEBRIEF
+      // DEBRIEF
       const bDeb = document.getElementById("btnDebrief");
-      const tagDeb = document.getElementById("tagDebrief");
-      tagDeb.innerText = `${state.debriefCount}/2`;
-      bDeb.className = "btn-cell" + (state.debriefCount >= 2 ? " btn-done btn-locked" : "");
+      let dBlocks = "";
+      for (let i = 1; i <= 2; i++) dBlocks += (i <= state.debriefCount) ? "■" : "□";
+      bDeb.innerText = `📻 [COMMS] TACTICAL DEBRIEF [${dBlocks} ${state.debriefCount}/2]`;
+      bDeb.className = "btn" + (state.debriefCount >= 2 ? " btn-done btn-locked" : "");
     }
 
     loadCloudState();
