@@ -13,8 +13,8 @@
   <style>
     :root {
       --bg: #000000;
-      --card: #0e0f13;
-      --card-inner: #16181e;
+      --card: #0d0e11;
+      --card-inner: #16181d;
       --border: #22252c;
       --text: #ffffff;
       --text-muted: #8e94a0;
@@ -38,77 +38,91 @@
       background-color: var(--bg);
       color: var(--text);
       font-family: ui-monospace, 'Menlo', 'Courier New', monospace;
-      overflow-x: hidden;
-      overflow-y: auto;
+      overflow: hidden;
     }
 
     body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: calc(env(safe-area-inset-top, 10px) + 6px) 12px calc(env(safe-area-inset-bottom, 10px) + 8px) 12px;
+      padding: calc(env(safe-area-inset-top, 8px) + 2px) 10px calc(env(safe-area-inset-bottom, 8px) + 4px) 10px;
     }
 
-    /* HLAVNÍ OHRANIČENÝ KONTEJNER: ZABÍRÁ ~85 % VÝŠKY DISPLEJE */
     .terminal {
       width: 100%;
       max-width: 420px;
-      min-height: 82vh;
+      height: calc(100dvh - env(safe-area-inset-top, 8px) - env(safe-area-inset-bottom, 8px) - 8px);
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 8px;
     }
 
-    /* 1. ZVĚTŠENÝ HORNÍ HUD PANEL */
+    /* 1. HORNÍ HUD PANEL */
     .hud-header {
       background: var(--card);
       border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 14px 12px 14px;
+      border-radius: 12px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 7px;
+      flex-shrink: 0;
     }
 
     .hud-topline {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 10.5px;
+      gap: 6px;
+      font-size: 9.5px;
       font-weight: 700;
+      white-space: nowrap;
     }
 
-    .tag-title { color: var(--text-muted); }
+    .tag-title {
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     .badge {
-      padding: 3px 8px;
-      border-radius: 5px;
-      background: rgba(48, 209, 88, 0.14);
+      padding: 2.5px 6px;
+      border-radius: 4px;
+      background: rgba(48, 209, 88, 0.12);
       color: var(--accent);
       font-weight: 700;
-      font-size: 10px;
+      font-size: 9px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-    .badge-warn { background: rgba(255, 159, 10, 0.18); color: var(--warn); }
-    .badge-alert { background: rgba(255, 69, 58, 0.18); color: var(--alert); }
+    .badge-warn { background: rgba(255, 159, 10, 0.15); color: var(--warn); }
+    .badge-alert { background: rgba(255, 69, 58, 0.15); color: var(--alert); }
 
     .hud-headline {
-      font-size: 14px;
+      font-size: clamp(11.5px, 3.2vw, 13px);
       font-weight: 700;
       color: var(--text);
-      line-height: 1.3;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .hud-subline {
-      font-size: 10px;
+      font-size: 8.5px;
       color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* ZVĚTŠENÁ TELEMETRIE */
+    /* TELEMETRIE */
     .tele-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      padding-top: 10px;
+      gap: 5px;
+      padding-top: 6px;
       border-top: 1px solid var(--border);
     }
     .tele-col {
@@ -116,33 +130,34 @@
       flex-direction: column;
       align-items: center;
       background: var(--card-inner);
-      padding: 7px 2px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 5px 2px;
+      border-radius: 6px;
     }
     .tele-lbl {
-      font-size: 8px;
+      font-size: 7.5px;
       font-weight: 700;
       color: var(--text-muted);
-      letter-spacing: 0.5px;
     }
     .tele-val {
-      font-size: 11px;
+      font-size: 9.5px;
       font-weight: 700;
-      margin-top: 3px;
+      margin-top: 2px;
     }
 
-    /* 2. OBLAST TLAČÍTEK: PEVNÁ VÝŠKA, ČISTÉ ROZESTUPY */
+    /* 2. OBLAST TLAČÍTEK: ROVNOMĚRNĚ VYPLŇUJE STŘED */
     .controls-zone {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      justify-content: space-evenly;
+      flex: 1;
+      gap: 6px;
+      padding: 2px 0;
     }
 
     .row-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
     }
 
     .btn {
@@ -151,7 +166,7 @@
       min-height: 48px;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 8px;
       color: var(--text);
       font-family: inherit;
       font-size: 11px;
@@ -162,6 +177,9 @@
       text-align: center;
       padding: 0 8px;
       cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       transition: background-color 0.1s, transform 0.05s;
     }
     .btn:active {
@@ -203,14 +221,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 12px;
+      padding: 6px 10px;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 9px;
+      border-radius: 6px;
+      font-size: 8px;
       font-weight: 600;
       color: var(--text-muted);
-      margin-top: 4px;
+      flex-shrink: 0;
     }
 
     /* MODÁLY */
@@ -227,19 +245,19 @@
     .modal-box {
       background: var(--card);
       border: 1.5px solid var(--border);
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 16px;
       width: 100%;
       max-width: 320px;
       font-size: 11px;
       line-height: 1.5;
     }
-    .modal-title { font-weight: 700; font-size: 12.5px; margin-bottom: 8px; }
+    .modal-title { font-weight: 700; font-size: 12px; margin-bottom: 8px; }
     .modal-btn {
       margin-top: 8px;
       width: 100%;
-      height: 44px;
-      border-radius: 8px;
+      height: 42px;
+      border-radius: 6px;
       font-weight: 700;
       cursor: pointer;
       border: 1px solid transparent;
@@ -254,10 +272,10 @@
 <body>
 
   <div class="terminal">
-    <!-- HORNÍ HUD PANEL (ZVĚTŠENÝ) -->
+    <!-- HORNÍ HUD PANEL -->
     <div class="hud-header">
       <div class="hud-topline">
-        <span class="tag-title">/// BLACK_OPPS // TERMINÁL</span>
+        <span class="tag-title">/// BLACK_OPPS</span>
         <span id="sysBadge" class="badge">[SYS: IN COMBAT]</span>
       </div>
 
@@ -303,8 +321,8 @@
       <button id="btnFinalLockdown" class="btn btn-warn" style="display: none;" onclick="openIntegrityModal()">🚨 [POSSIBLE BREACH ALERT] VERIFY EXEC INTEGRITY</button>
       <button id="btnLightsOut" class="btn" style="display: none;" onclick="recordLightsOut()">🌙 [PROTOCOL] LIGHTS OUT // JÍT SPÁT</button>
 
-      <!-- Debrief a Stand down -->
-      <button id="btnDebrief" class="btn" onclick="openDebriefModal()">📻 [COMMS] TACTICAL DEBRIEF [□□ 0/2]</button>
+      <!-- Debrief s čistým čítačem [0/2] -->
+      <button id="btnDebrief" class="btn" onclick="openDebriefModal()">📻 [COMMS] TACTICAL DEBRIEF [0/2]</button>
       <button class="btn btn-alert" onclick="openStandDown()">🚨 [PROTOCOL] STAND DOWN</button>
     </div>
 
@@ -376,7 +394,7 @@
       tacticalRetreat: false,
       bedtime: null,
       sleepHistory: [],
-      debriefResetDoneV4: false
+      debriefResetDoneV5: false
     };
 
     async function loadCloudState() {
@@ -392,10 +410,10 @@
 
           let needsSync = false;
 
-          // HARD-RESET DEBRIEFU DO CLOUDU (Zaručeně přepíše starou 1/2 na 0/2)
-          if (!record.debriefResetDoneV4) {
+          // HARD-RESET DEBRIEFU DO CLOUDU (Garantuje 0/2)
+          if (!record.debriefResetDoneV5) {
             record.debriefCount = 0;
-            record.debriefResetDoneV4 = true;
+            record.debriefResetDoneV5 = true;
             needsSync = true;
           }
 
@@ -639,7 +657,7 @@
           bLockdown.className = "btn btn-alert btn-locked";
           badge.innerText = "[SYS: MISSION FAILED]";
           badge.className = "badge badge-alert";
-          title.innerText = ">> DEFENSE PERIMETER BREACHED // FAILED";
+          title.innerText = ">> DEFENSE PERIMETER BREACHED";
           sub.innerText = "EXEKUTIVNÍ KONTROLA KOMPROMITOVÁNA";
         } else if (state.integrityLocked && allObjectivesDone) {
           bLockdown.innerText = "🏆 [ALL OBJECTIVES SECURED] MISSION ACCOMPLISHED";
@@ -724,12 +742,13 @@
         }
       }
 
-      // DEBRIEF S POČÍTADLEM [□□ 0/2]
+      // 4. DEBRIEF JAKO ČISTÝ ČÍTAČ [0/2], [1/2], [2/2 ✓]
       const bDeb = document.getElementById("btnDebrief");
-      let dBlocks = "";
-      for (let i = 1; i <= 2; i++) dBlocks += (i <= state.debriefCount) ? "■" : "□";
-      bDeb.innerText = `📻 [COMMS] TACTICAL DEBRIEF [${dBlocks} ${state.debriefCount}/2]`;
-      bDeb.className = "btn" + (state.debriefCount >= 2 ? " btn-done btn-locked" : "");
+      const isDebriefMax = state.debriefCount >= 2;
+      bDeb.innerText = isDebriefMax 
+        ? "📻 [COMMS] TACTICAL DEBRIEF [2/2 ✓]" 
+        : `📻 [COMMS] TACTICAL DEBRIEF [${state.debriefCount}/2]`;
+      bDeb.className = "btn" + (isDebriefMax ? " btn-done btn-locked" : "");
     }
 
     loadCloudState();
