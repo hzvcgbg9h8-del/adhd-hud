@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>ADHD BLACK OPPS</title>
   
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -24,24 +24,28 @@
       --cyan: #38bdf8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-    body {
+    html, body {
+      width: 100%;
+      min-height: 100%;
       background-color: var(--bg);
       color: var(--text);
       font-family: 'Menlo', 'Courier New', monospace;
-      min-height: 100vh;
+    }
+    body {
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 16px;
-      padding-top: env(safe-area-inset-top, 20px);
+      flex-direction: column;
+      padding: calc(env(safe-area-inset-top, 12px) + 8px) 12px calc(env(safe-area-inset-bottom, 12px) + 8px) 12px;
     }
     .hud-terminal {
       width: 100%;
-      max-width: 420px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       background-color: var(--card);
       border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: 14px;
+      padding: 16px 14px;
       box-shadow: 0 0 25px rgba(34, 197, 94, 0.15);
     }
     .header {
@@ -50,7 +54,7 @@
       font-size: 11px;
       font-weight: bold;
       color: var(--text-muted);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .badge { color: var(--accent); }
     .badge-alert { color: var(--alert); }
@@ -58,19 +62,19 @@
     .badge-gold { color: var(--gold); }
     .badge-cyan { color: var(--cyan); }
 
-    .countdown-box { margin-bottom: 14px; }
-    .countdown-title { font-size: 13.5px; font-weight: bold; color: #fff; }
-    .countdown-sub { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
+    .countdown-box { margin-bottom: 12px; }
+    .countdown-title { font-size: 14px; font-weight: bold; color: #fff; line-height: 1.3; }
+    .countdown-sub { font-size: 9px; color: var(--text-muted); margin-top: 3px; line-height: 1.3; }
 
     .tele-bar {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 4px;
-      background-color: rgba(0,0,0,0.4);
+      background-color: rgba(0,0,0,0.5);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 6px;
-      margin-bottom: 14px;
+      border-radius: 8px;
+      padding: 8px 4px;
+      margin-bottom: 12px;
       text-align: center;
       font-size: 9px;
     }
@@ -82,7 +86,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .btn {
       background-color: #0d1e0d;
@@ -90,9 +94,9 @@
       border-radius: 8px;
       color: var(--text);
       font-family: inherit;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: bold;
-      padding: 13px 6px;
+      padding: 14px 6px;
       text-align: center;
       display: block;
       cursor: pointer;
@@ -153,7 +157,7 @@
       color: var(--text-muted);
       border-top: 1px solid var(--border);
       padding-top: 10px;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .modal {
@@ -197,32 +201,34 @@
 <body>
 
   <div class="hud-terminal">
-    <div class="header">
-      <span>/// ADHD_OPPS // TERMINÁL</span>
-      <span id="sysBadge" class="badge">[SYS: IN COMBAT]</span>
-    </div>
+    <div>
+      <div class="header">
+        <span>/// ADHD_OPPS // TERMINÁL</span>
+        <span id="sysBadge" class="badge">[SYS: IN COMBAT]</span>
+      </div>
 
-    <div class="countdown-box">
-      <div id="hudTitle" class="countdown-title">&gt;&gt; TAKTICKÝ TERMINÁL</div>
-      <div id="hudSub" class="countdown-sub">STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ</div>
-    </div>
+      <div class="countdown-box">
+        <div id="hudTitle" class="countdown-title">&gt;&gt; TAKTICKÝ TERMINÁL</div>
+        <div id="hudSub" class="countdown-sub">STAND DOWN VE 20:00 // TELEMETRIE AKTIVNÍ</div>
+      </div>
 
-    <div class="tele-bar">
-      <div class="tele-item">
-        <span class="tele-label">MEDIC</span>
-        <span id="teleMedic" class="tele-val">STANDBY</span>
-      </div>
-      <div class="tele-item">
-        <span class="tele-label">OPS</span>
-        <span id="teleOps" class="tele-val">DROP ZONE</span>
-      </div>
-      <div class="tele-item">
-        <span class="tele-label">PhD</span>
-        <span id="telePhd" class="tele-val">0/3</span>
-      </div>
-      <div class="tele-item">
-        <span class="tele-label">EXEC</span>
-        <span id="teleExec" class="tele-val">D-00</span>
+      <div class="tele-bar">
+        <div class="tele-item">
+          <span class="tele-label">MEDIC</span>
+          <span id="teleMedic" class="tele-val">STANDBY</span>
+        </div>
+        <div class="tele-item">
+          <span class="tele-label">OPS</span>
+          <span id="teleOps" class="tele-val">DROP ZONE</span>
+        </div>
+        <div class="tele-item">
+          <span class="tele-label">PhD</span>
+          <span id="telePhd" class="tele-val">0/3</span>
+        </div>
+        <div class="tele-item">
+          <span class="tele-label">EXEC</span>
+          <span id="teleExec" class="tele-val">D-00</span>
+        </div>
       </div>
     </div>
 
@@ -233,13 +239,8 @@
       <button id="btnEngage" class="btn btn-full" onclick="confirmEngaged()">🪂 [CONFIRM] ENGAGED</button>
       <button id="btnExec" class="btn btn-full" onclick="confirmExec()">🧱 EXECUTIVE CONTROL</button>
 
-      <!-- Denní manévr: Ústup / Návrat -->
       <button id="toggleRetreatBtn" class="btn btn-full" onclick="toggleRetreat()"></button>
-      
-      <!-- Večerní fáze 1 (20:00): Return to base -->
       <button id="btnCeasefireRtb" class="btn btn-full btn-cyan" onclick="confirmCeasefireRtb()"></button>
-
-      <!-- Večerní fáze 2 (22:30+): Lockdown & Verifikace integrity -->
       <button id="btnFinalLockdown" class="btn btn-full" onclick="openIntegrityModal()"></button>
 
       <button id="btnDebrief" class="btn btn-full" onclick="addDebrief()">📻 [COMMS] TAC_DEBRIEF (0/2)</button>
@@ -310,13 +311,11 @@
           let today = getTodayStr();
           let thisMonth = getCurrentMonthStr();
 
-          // 1. Měsíční reset počítadla terapií
           if (!record.currentMonth || record.currentMonth !== thisMonth) {
             record.currentMonth = thisMonth;
             record.debriefCount = 0;
           }
 
-          // 2. Denní reset úkolů o půlnoci
           if (record.date !== today) {
             record.date = today;
             record.atomoxetin = false;
@@ -477,12 +476,12 @@
       let diffDays = curD <= 12 ? (12 - curD) : (30 - curD + 12);
       document.getElementById("objMilestone").innerText = `OBJ: T-${diffDays}D DO 12.`;
 
-      // Telemetrie MEDIC
+      // 1. Telemetrie MEDIC (Splněno = zelená)
       const tMed = document.getElementById("teleMedic");
       tMed.innerText = state.atomoxetin ? "IN POS ✓" : "STANDBY";
       tMed.style.color = state.atomoxetin ? "var(--accent)" : "var(--alert)";
 
-      // Telemetrie OPS
+      // 2. Telemetrie OPS (Splněno = zelená)
       const tOps = document.getElementById("teleOps");
       if (isLockdown) {
         if (state.execFailedToday) {
@@ -493,30 +492,29 @@
           tOps.style.color = "var(--orange)";
         } else if (allObjectivesDone) {
           tOps.innerText = "VICTORY ✓";
-          tOps.style.color = "var(--gold)";
+          tOps.style.color = "var(--accent)"; // SJEDNOCENO: zelená
         } else {
           tOps.innerText = "LOCKED";
-          tOps.style.color = "var(--cyan)";
+          tOps.style.color = "var(--accent)"; // SJEDNOCENO: zelená
         }
       } else if (isPostCeasefire) {
         tOps.innerText = state.ceasefireConfirmed ? "SECURED ✓" : "RTB REQUIRED";
-        tOps.style.color = state.ceasefireConfirmed ? "var(--cyan)" : "var(--alert)";
+        tOps.style.color = state.ceasefireConfirmed ? "var(--accent)" : "var(--alert)"; // SJEDNOCENO: zelená
       } else {
         tOps.innerText = state.engaged ? "ENGAGED ✓" : "DROP ZONE";
         tOps.style.color = state.engaged ? "var(--accent)" : "var(--text-muted)";
       }
 
-      // Telemetrie PhD
+      // 3. Telemetrie PhD (Splněno 3/3 = zelená, rozpracováno = jemně zelená, 0 = šedá)
       const tPhd = document.getElementById("telePhd");
       tPhd.innerText = `${state.phdHours}/3`;
-      tPhd.style.color = state.phdHours === 3 ? "var(--accent)" : (state.phdHours > 0 ? "var(--cyan)" : "var(--text-muted)");
+      tPhd.style.color = state.phdHours === 3 ? "var(--accent)" : (state.phdHours > 0 ? "var(--text)" : "var(--text-muted)");
 
-      // Telemetrie EXEC
+      // 4. Telemetrie EXEC (Splněno = zelená)
       const tExec = document.getElementById("teleExec");
       tExec.innerText = `D-${String(state.streak).padStart(2,'0')} ${state.execConfirmedToday ? "✓" : (state.execFailedToday ? "❌" : "!")}`;
       tExec.style.color = state.execFailedToday ? "var(--alert)" : (state.execConfirmedToday ? "var(--accent)" : "var(--text-muted)");
 
-      // Tlačítka
       document.getElementById("btnMedic").className = state.atomoxetin ? "btn btn-done" : "btn";
       
       const btnPhd = document.getElementById("btnPhd");
