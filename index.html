@@ -8,20 +8,20 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="BLACK OPPS">
-  <meta name="theme-color" content="#04070a">
+  <meta name="theme-color" content="#000000">
 
   <style>
     :root {
-      --bg: #04070a;
-      --card: #0a111a;
-      --border: #162436;
-      --border-focus: #2563eb;
-      --text: #f1f5f9;
-      --text-muted: #64748b;
-      --accent: #10b981;      /* Smaragdová pro splněno */
-      --alert: #ef4444;       /* Čistá červená */
-      --warn: #f59e0b;        /* Jantarová pro warning */
-      --sleep: #818cf8;       /* Indigo pro noční režim */
+      --bg: #000000;
+      --card: #0d1117;
+      --card-inner: #161b22;
+      --border: #21262d;
+      --border-bright: #30363d;
+      --text: #ffffff;
+      --text-muted: #8b949e;
+      --accent: #10b981;
+      --alert: #ef4444;
+      --warn: #f59e0b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     html, body {
@@ -30,7 +30,7 @@
       height: 100dvh;
       background-color: var(--bg);
       color: var(--text);
-      font-family: 'Menlo', 'Courier New', monospace;
+      font-family: -apple-system, 'Menlo', 'Courier New', monospace;
       overflow: hidden;
     }
     body {
@@ -44,89 +44,100 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       background-color: var(--card);
-      border: 1.5px solid var(--border);
+      border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 12px 10px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      gap: 8px;
     }
 
+    /* TOP ZONE */
+    .top-zone {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 10px;
-      font-weight: bold;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
       color: var(--text-muted);
-      border-bottom: 1px dashed var(--border);
-      padding-bottom: 5px;
-      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
     }
     .badge { color: var(--accent); }
     .badge-alert { color: var(--alert); }
     .badge-warn { color: var(--warn); }
 
     .countdown-box {
-      background: rgba(0, 0, 0, 0.3);
+      background: var(--card-inner);
+      border: 1px solid var(--border);
       border-left: 3px solid var(--accent);
+      border-radius: 6px;
       padding: 6px 8px;
-      margin-bottom: 8px;
     }
-    .countdown-title { font-size: 12.5px; font-weight: bold; color: #fff; line-height: 1.25; }
+    .countdown-title { font-size: 12px; font-weight: 700; color: #fff; line-height: 1.25; }
     .countdown-sub { font-size: 8.5px; color: var(--text-muted); margin-top: 2px; }
 
     .tele-bar {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 5px;
-      background-color: rgba(0,0,0,0.5);
+      gap: 4px;
+      background-color: var(--bg);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 6px 2px;
-      margin-bottom: 8px;
+      padding: 4px 2px;
       text-align: center;
     }
     .tele-item span { display: block; }
-    .tele-label { color: var(--text-muted); font-size: 7.5px; font-weight: bold; }
-    .tele-val { font-size: 8.5px; font-weight: bold; margin-top: 2px; }
+    .tele-label { color: var(--text-muted); font-size: 7.5px; font-weight: 700; }
+    .tele-val { font-size: 8.5px; font-weight: 700; margin-top: 2px; }
 
+    /* MIDDLE ZONE: DYNAMICKÁ DISTRIBUCE */
     .grid {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      flex: 1;
-      justify-content: center;
+      flex: 1; /* Vyplní celý zbytek obrazovky */
+      min-height: 0;
     }
     .row-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 6px;
+      flex: 1;
+      min-height: 42px;
     }
     .btn {
-      background-color: #0f1a26;
-      border: 1px solid var(--border);
+      background-color: var(--card-inner);
+      border: 1px solid var(--border-bright);
       border-radius: 6px;
       color: var(--text);
       font-family: inherit;
-      font-size: 10.5px;
-      font-weight: bold;
-      padding: 12px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 0 8px;
       text-align: center;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.1s ease;
+      flex: 1; /* Automaticky se roztáhne podle dostupného místa */
+      min-height: 42px;
+      transition: background-color 0.1s;
     }
     .btn:active {
       transform: scale(0.98);
-      background-color: #172738;
-      border-color: var(--accent);
+      background-color: #21262d;
     }
     .btn-done {
-      border-color: #1a2a3a;
+      border-color: var(--border);
       color: var(--text-muted);
+      background-color: rgba(255,255,255,0.02);
       opacity: 0.6;
     }
     .btn-locked {
@@ -135,82 +146,74 @@
       opacity: 0.9 !important;
     }
     .btn-warn {
-      border-color: #78350f;
+      border-color: rgba(245, 158, 11, 0.4);
       color: var(--warn);
-      background-color: #1c1202;
-    }
-    .btn-reward {
-      border-color: #854d0e;
-      color: #fef08a;
-      background: linear-gradient(180deg, #1c1503 0%, #0d0a01 100%);
-      box-shadow: 0 0 10px rgba(234, 179, 8, 0.2);
-    }
-    .btn-failed {
-      border-color: #7f1d1d;
-      color: #fca5a5;
-      background: #2b0c0c;
+      background-color: rgba(245, 158, 11, 0.05);
     }
     .btn-alert {
-      border-color: #551414;
+      border-color: rgba(239, 68, 68, 0.4);
       color: var(--alert);
-      background-color: #1a0808;
+      background-color: rgba(239, 68, 68, 0.05);
     }
-    .btn-sleep {
-      border-color: #3730a3;
-      color: #c7d2fe;
-      background-color: #0e1126;
+    .btn-reward {
+      border-color: var(--warn);
+      color: #fff;
+      background: linear-gradient(180deg, #1c1503 0%, var(--card-inner) 100%);
     }
 
+    /* BOTTOM ZONE */
     .footer {
       display: flex;
       justify-content: space-between;
       font-size: 8px;
+      font-weight: 600;
       color: var(--text-muted);
-      border-top: 1px dashed var(--border);
-      padding-top: 6px;
-      margin-top: 6px;
+      border-top: 1px solid var(--border);
+      padding-top: 4px;
+      flex-shrink: 0;
     }
 
+    /* MODALS */
     .modal {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.88);
+      background: rgba(0,0,0,0.85);
       justify-content: center;
       align-items: center;
       padding: 16px;
       z-index: 100;
     }
     .modal-content {
-      background: #0d1520;
-      border: 1.5px solid var(--border);
+      background: var(--card);
+      border: 1px solid var(--border-bright);
       border-radius: 8px;
       padding: 14px;
-      max-width: 340px;
+      max-width: 320px;
       font-size: 10.5px;
       line-height: 1.4;
     }
-    .modal-title { font-weight: bold; font-size: 12px; margin-bottom: 8px; }
+    .modal-title { font-weight: 700; font-size: 12px; margin-bottom: 8px; }
     .modal-btn {
       margin-top: 8px;
       width: 100%;
-      padding: 9px;
+      padding: 10px;
       font-family: inherit;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 6px;
     }
-    .btn-m-safe { background: #062419; border: 1px solid var(--accent); color: var(--accent); }
-    .btn-m-alert { background: #2a0a0a; border: 1px solid var(--alert); color: var(--alert); }
-    .btn-m-cancel { background: #111; border: 1px solid #333; color: #888; }
+    .btn-m-safe { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent); color: var(--accent); }
+    .btn-m-alert { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--alert); color: var(--alert); }
+    .btn-m-cancel { background: var(--card-inner); border: 1px solid var(--border); color: var(--text-muted); }
   </style>
 </head>
 <body>
 
   <div class="hud-terminal">
-    <div>
+    <div class="top-zone">
       <div class="header">
-        <span>/// BLACK_OPPS // HUD</span>
+        <span>/// BLACK_OPPS // TERMINAL</span>
         <span id="sysBadge" class="badge">[SYS: IN COMBAT]</span>
       </div>
 
@@ -240,7 +243,7 @@
     </div>
 
     <div class="grid">
-      <div class="row-split">
+      <div id="rowMedicPhd" class="row-split">
         <button id="btnMedic" class="btn" onclick="toggleMedic()">🧪 DEPLOY MEDIC</button>
         <button id="btnPhd" class="btn" onclick="addPhd()">📡 PhD: +1h</button>
       </div>
@@ -248,11 +251,11 @@
       <button id="btnEngage" class="btn" onclick="confirmEngaged()">🪂 [CONFIRM] ENGAGED</button>
       <button id="btnExec" class="btn" onclick="confirmExec()">🧱 EXECUTIVE CONTROL</button>
 
-      <button id="toggleRetreatBtn" class="btn" onclick="toggleRetreat()"></button>
+      <button id="toggleRetreatBtn" class="btn btn-warn" onclick="toggleRetreat()"></button>
       <button id="btnCeasefireRtb" class="btn btn-warn" onclick="confirmCeasefireRtb()"></button>
       <button id="btnFinalLockdown" class="btn" onclick="openIntegrityModal()"></button>
 
-      <button id="btnLightsOut" class="btn btn-sleep" onclick="recordLightsOut()"></button>
+      <button id="btnLightsOut" class="btn" onclick="recordLightsOut()"></button>
 
       <button id="btnDebrief" class="btn" onclick="openDebriefModal()">📻 [COMMS] TACTICAL DEBRIEF (0/2)</button>
       <button class="btn btn-alert" onclick="openStandDown()">🚨 [PROTOCOL] STAND DOWN</button>
@@ -266,13 +269,12 @@
   </div>
 
   <div id="standDownModal" class="modal">
-    <div class="modal-content" style="border-color: var(--alert); background: #140808;">
+    <div class="modal-content" style="border-color: var(--alert);">
       <div class="modal-title" style="color: var(--alert);">⚠️ KLID ZBRANÍ // STAND DOWN</div>
-      <p>[ZASTAVIT PALBU. ODLOŽIT MOBIL.]</p><br>
-      <p>1. Kognitivní klam: Mozek hledá rychlou dopaminovou zkratku.</p>
+      <p>1. Kognitivní klam: Mozek hledá levný dopamin.</p>
       <p>2. Prohra je matematická jistota. Výhra neexistuje.</p>
       <p>3. Vypij velkou sklenici vody a vezmi rychlý cukr pro kortex.</p>
-      <p>4. Pravidlo 180 vteřin: Zákaz jakékoliv neautorizované akce.</p>
+      <p>4. Pravidlo 180 vteřin: Zákaz neautorizované akce.</p>
       <button class="modal-btn btn-m-alert" onclick="closeStandDown()">ROZKAZ. DRŽÍM LINII.</button>
     </div>
   </div>
@@ -280,17 +282,15 @@
   <div id="integrityModal" class="modal">
     <div class="modal-content">
       <div class="modal-title" style="color: var(--accent);">🛡️ VERIFIKACE EXECUTIVE CONTROL</div>
-      <p>[ZÁVĚREČNÁ PROVĚRKA CELÉHO DNE]</p><br>
-      <p>Byla obranná linie kortexu udržena po celý den a večer bez infiltrace, ztráty sebekontroly a neautorizovaných aktivit?</p>
-      <button class="modal-btn btn-m-safe" onclick="resolveIntegrity(true)">🛡️ [PERIMETER INTACT] LINIE UDRŽENA (+1 STREAK)</button>
-      <button class="modal-btn btn-m-alert" onclick="resolveIntegrity(false)">❌ [BREACH CONFIRMED] PERIMETR PROLOMEN (MISSION FAILED)</button>
+      <p>Byla obranná linie kortexu udržena po celý den a večer bez ztráty sebekontroly?</p>
+      <button class="modal-btn btn-m-safe" onclick="resolveIntegrity(true)">🛡️ [INTACT] LINIE UDRŽENA (+1 STREAK)</button>
+      <button class="modal-btn btn-m-alert" onclick="resolveIntegrity(false)">❌ [BREACH] PERIMETR PROLOMEN (RESET)</button>
     </div>
   </div>
 
   <div id="debriefModal" class="modal">
     <div class="modal-content" style="border-color: var(--accent);">
       <div class="modal-title" style="color: var(--accent);">📻 TACTICAL DEBRIEF</div>
-      <p>[MENTÁLNÍ REKALIBRACE JEDNOTKY]</p><br>
       <p>Potvrdit absolvování mentální rekalibrace jednotky? (+1 k měsíční kvótě DEBRIEF 2/2)</p>
       <button class="modal-btn btn-m-safe" onclick="confirmDebriefSuccess()">✅ [CONFIRM] REKALIBRACE DOKONČENA</button>
       <button class="modal-btn btn-m-cancel" onclick="closeDebriefModal()">ZRUŠIT</button>
@@ -326,9 +326,7 @@
       const sync = document.getElementById("syncStatus");
       sync.innerText = "SYNC: ...";
       try {
-        let res = await fetch(`${API_URL}/latest`, {
-          headers: { "X-Master-Key": API_KEY }
-        });
+        let res = await fetch(`${API_URL}/latest`, { headers: { "X-Master-Key": API_KEY } });
         if (res.ok) {
           let data = await res.json();
           let record = data.record;
@@ -336,7 +334,6 @@
           let thisMonth = getCurrentMonthStr();
 
           if (!record.sleepHistory) record.sleepHistory = [];
-
           if (!record.currentMonth || record.currentMonth !== thisMonth) {
             record.currentMonth = thisMonth;
             record.debriefCount = 0;
@@ -357,11 +354,9 @@
           }
           state = record;
           sync.innerText = "SYNC: OK";
-        } else {
-          sync.innerText = "SYNC: OFFLINE";
         }
       } catch (e) {
-        sync.innerText = "SYNC: CHYBA";
+        sync.innerText = "SYNC: OFFLINE";
       }
       render();
     }
@@ -373,10 +368,7 @@
       try {
         let res = await fetch(API_URL, {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Master-Key": API_KEY
-          },
+          headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
           body: JSON.stringify(targetState)
         });
         if (res.ok) sync.innerText = "SYNC: OK";
@@ -458,7 +450,6 @@
     function resolveIntegrity(isSuccess) {
       closeIntegrityModal();
       if (state.integrityLocked) return;
-
       state.integrityLocked = true;
       if (isSuccess) {
         if (!state.execConfirmedToday) {
@@ -479,26 +470,11 @@
       if (state.bedtime) return;
       const now = new Date();
       const timeStr = now.toTimeString().slice(0, 5);
-      const isCurfew = (now.getHours() > 23 || (now.getHours() === 23 && now.getMinutes() > 30) || now.getHours() < 4);
-      
       state.bedtime = timeStr;
       if (!state.sleepHistory) state.sleepHistory = [];
-      
-      state.sleepHistory.push({
-        date: getTodayStr(),
-        time: timeStr,
-        status: isCurfew ? "CURFEW_BREACH" : "ON_TARGET"
-      });
-
+      state.sleepHistory.push({ date: getTodayStr(), time: timeStr });
       render();
       syncCloudState();
-    }
-
-    function getPhdIntel() {
-      if (state.phdHours === 0) return { title: "INTEL: ŽÁDNÁ DATA // SEKTOR BEZ ZÁZNAMU", sub: "Bojový sektor bez posunu." };
-      if (state.phdHours === 1) return { title: "INTEL: SIGNÁL ZACHYCEN // 1/3H", sub: "Stahování surových dat zahájeno." };
-      if (state.phdHours === 2) return { title: "INTEL: TAKTICKÁ DATA // 2/3H", sub: "Dekódování pokročilých struktur." };
-      return { title: "INTEL: VÝZKUMNÝ CÍL SPLNĚN // 3/3H", sub: "Strategická data kompletní." };
     }
 
     function render() {
@@ -508,59 +484,42 @@
 
       const isPostCeasefire = (hr >= 20);
       const isLockdown = (hr > 22 || (hr === 22 && min >= 30));
-
       const isExecSafe = state.execConfirmedToday;
       const allObjectivesDone = (state.atomoxetin && state.phdHours >= 3 && isExecSafe);
-      const intel = getPhdIntel();
 
       let curD = now.getDate();
       let diffDays = curD <= 12 ? (12 - curD) : (30 - curD + 12);
       document.getElementById("objMilestone").innerText = `OBJ: T-${diffDays}D DO 12.`;
       document.getElementById("sleepStat").innerText = state.bedtime ? `BED: ${state.bedtime} ✓` : "BED: --:--";
 
-      // 1. Telemetrie MEDIC
+      // Telemetrie
       const tMed = document.getElementById("teleMedic");
       tMed.innerText = state.atomoxetin ? "IN POS ✓" : "STANDBY";
       tMed.style.color = state.atomoxetin ? "var(--accent)" : "var(--alert)";
 
-      // 2. Telemetrie OPS
       const tOps = document.getElementById("teleOps");
       if (isLockdown) {
-        if (state.execFailedToday) {
-          tOps.innerText = "FAILED ❌";
-          tOps.style.color = "var(--alert)";
-        } else if (state.integrityLocked && allObjectivesDone) {
-          tOps.innerText = "MISSION OK ✓";
-          tOps.style.color = "var(--accent)";
-        } else if (state.integrityLocked) {
-          tOps.innerText = "LOCKED ✓";
-          tOps.style.color = "var(--accent)";
-        } else {
-          tOps.innerText = "VERIFY REQ";
-          tOps.style.color = "var(--warn)";
-        }
+        tOps.innerText = state.execFailedToday ? "FAILED ❌" : (state.integrityLocked ? "LOCKED ✓" : "VERIFY REQ");
+        tOps.style.color = state.execFailedToday ? "var(--alert)" : (state.integrityLocked ? "var(--accent)" : "var(--warn)");
       } else if (isPostCeasefire) {
-        tOps.innerText = state.ceasefireConfirmed ? "SECURED ✓" : "RTB REQUIRED";
+        tOps.innerText = state.ceasefireConfirmed ? "SECURED ✓" : "RTB REQ";
         tOps.style.color = state.ceasefireConfirmed ? "var(--accent)" : "var(--alert)";
       } else {
         tOps.innerText = state.engaged ? "ENGAGED ✓" : "DROP ZONE";
         tOps.style.color = state.engaged ? "var(--accent)" : "var(--text-muted)";
       }
 
-      // 3. Telemetrie PhD
       const tPhd = document.getElementById("telePhd");
       let bStr = "";
       for (let i = 1; i <= 3; i++) bStr += (i <= state.phdHours) ? "■" : "□";
       tPhd.innerText = `${bStr} ${state.phdHours}/3`;
-      tPhd.style.color = state.phdHours === 3 ? "var(--accent)" : (state.phdHours > 0 ? "var(--text)" : "var(--text-muted)");
+      tPhd.style.color = state.phdHours === 3 ? "var(--accent)" : "var(--text)";
 
-      // 4. Telemetrie EXEC
       const tExec = document.getElementById("teleExec");
       tExec.innerText = `D-${String(state.streak).padStart(2,'0')} ${state.execConfirmedToday ? "✓" : (state.execFailedToday ? "❌" : "!")}`;
       tExec.style.color = state.execFailedToday ? "var(--alert)" : (state.execConfirmedToday ? "var(--accent)" : "var(--text-muted)");
 
       document.getElementById("btnMedic").className = "btn" + (state.atomoxetin ? " btn-done" : "");
-      
       const btnPhd = document.getElementById("btnPhd");
       btnPhd.innerText = `📡 PhD: ${state.phdHours}/3h`;
       btnPhd.className = "btn" + (state.phdHours === 3 ? " btn-done" : "");
@@ -575,6 +534,7 @@
       const title = document.getElementById("hudTitle");
       const sub = document.getElementById("hudSub");
 
+      // Reset viditelnosti tlačítek
       btnRtb.style.display = "none";
       btnLockdown.style.display = "none";
       btnEng.style.display = "none";
@@ -591,56 +551,55 @@
           btnSleep.className = "btn btn-done btn-locked";
         } else {
           btnSleep.innerText = "🌙 [PROTOCOL] LIGHTS OUT // JDU SPÁT";
-          btnSleep.className = "btn btn-sleep";
+          btnSleep.className = "btn";
         }
 
         if (state.execFailedToday) {
           btnLockdown.innerText = "🚨 [MISSION FAILED] PERIMETER BREACHED";
-          btnLockdown.className = "btn btn-failed btn-locked";
+          btnLockdown.className = "btn btn-alert btn-locked";
           badge.innerText = "[SYS: MISSION FAILED]";
           badge.className = "badge badge-alert";
-          title.innerText = ">> DEFENSE PERIMETER BREACHED // FAILED";
-          sub.innerText = "EXEKUTIVNÍ KONTROLA KOMPROMITOVÁNA // NOUZOVÝ DEBRIEF";
+          title.innerText = ">> DEFENSE PERIMETER BREACHED";
+          sub.innerText = "EXEKUTIVNÍ KONTROLA KOMPROMITOVÁNA";
         } else if (state.integrityLocked && allObjectivesDone) {
-          btnLockdown.innerText = "🏆 [ALL OBJECTIVES SECURED] MISSION ACCOMPLISHED";
+          btnLockdown.innerText = "🏆 [ALL SECURED] MISSION ACCOMPLISHED";
           btnLockdown.className = "btn btn-reward btn-locked";
           badge.innerText = "[SYS: MISSION ACCOMPLISHED]";
           badge.className = "badge badge-warn";
           title.innerText = ">> DNEŠNÍ BITVA VYHRÁNA // LINIE UDRŽENA";
-          sub.innerText = `ŽÁDNÉ ZTRÁTY // ${intel.sub} // REGENERACE POVOLENA`;
+          sub.innerText = "ŽÁDNÉ ZTRÁTY // REGENERACE POVOLENA";
         } else if (state.integrityLocked) {
           btnLockdown.innerText = "🔒 [BASE LOCKDOWN] PERIMETER SECURED";
           btnLockdown.className = "btn btn-done btn-locked";
           badge.innerText = "[SYS: BASE LOCKDOWN]";
           badge.className = "badge";
           title.innerText = ">> BASE LOCKDOWN // KONTROLA UDRŽENA";
-          sub.innerText = `EXEKUTIVA ZAJIŠTĚNA // ${intel.sub}`;
+          sub.innerText = "EXEKUTIVA ZAJIŠTĚNA";
         } else {
-          btnLockdown.innerText = "🚨 [POSSIBLE BREACH ALERT] VERIFY EXEC INTEGRITY";
+          btnLockdown.innerText = "🚨 [VERIFY REQUIRED] VERIFY EXEC INTEGRITY";
           btnLockdown.className = "btn btn-warn";
           badge.innerText = "[SYS: VERIFY REQUIRED]";
           badge.className = "badge badge-warn";
           title.innerText = ">> BASE LOCKDOWN // ČEKÁ SE NA VERIFIKACI";
-          sub.innerText = `${intel.sub} // POTVRĎ INTEGRITU PERIMETRU`;
+          sub.innerText = "POTVRĎ INTEGRITU PERIMETRU";
         }
 
       } else if (isPostCeasefire) {
         btnRtb.style.display = "flex";
-
         if (state.ceasefireConfirmed) {
           btnRtb.innerText = "🛡️ [SECURED AT BASE] CEASEFIRE ACTIVE ✓";
           btnRtb.className = "btn btn-done";
           badge.innerText = "[SYS: AT BASE]";
           badge.className = "badge";
           title.innerText = ">> CEASEFIRE UDRŽEN // PERIMETR ZAJIŠTĚN";
-          sub.innerText = `BOJOVÝ KONTAKT PŘERUŠEN // ${intel.sub}`;
+          sub.innerText = "BOJOVÝ KONTAKT PŘERUŠEN";
         } else {
           btnRtb.innerText = "🛑 [CONFIRM] CEASEFIRE // RETURN TO BASE";
           btnRtb.className = "btn btn-warn";
-          badge.innerText = "[SYS: CEASEFIRE ENFORCED]";
+          badge.innerText = "[SYS: CEASEFIRE]";
           badge.className = "badge badge-alert";
           title.innerText = ">> CEASEFIRE V PLATNOSTI // ZASTAVIT PALBU";
-          sub.innerText = `RETURN TO BASE // ${intel.sub}`;
+          sub.innerText = "RETURN TO BASE // UKONČIT AKTIVITY";
         }
 
       } else {
@@ -659,27 +618,14 @@
           badge.innerText = "[SYS: TAC RETREAT]";
           badge.className = "badge badge-warn";
           title.innerText = ">> TAC_RETREAT // POZASTAVENO";
-          sub.innerText = `DNEŠNÍ OPERACE UKONČENY // ${intel.sub}`;
+          sub.innerText = "DNEŠNÍ OPERACE UKONČENY";
         } else {
           rBtn.innerText = "🚁 [ABORT] TACTICAL RETREAT";
           rBtn.className = "btn btn-warn";
-
-          if (state.execConfirmedToday) {
-            badge.innerText = "[SYS: SHIELD ACTIVE]";
-            badge.className = "badge";
-            title.innerText = `>> EXEKUTIVNÍ ŠTÍT: D-${String(state.streak).padStart(2,'0')} V LINII`;
-            sub.innerText = `DISCIPLÍNA ZAJIŠTĚNA // ${intel.sub}`;
-          } else if (state.engaged) {
-            badge.innerText = "[SYS: IN COMBAT]";
-            badge.className = "badge";
-            title.innerText = `>> ${intel.title}`;
-            sub.innerText = `STAND DOWN VE 20:00 // ${intel.sub}`;
-          } else {
-            badge.innerText = "[SYS: DROP ZONE]";
-            badge.className = "badge";
-            title.innerText = ">> PŘÍPRAVA NA VÝSADEK";
-            sub.innerText = "POTVRĎ MEDIC A ENGAGED PŘED ZAHÁJENÍM";
-          }
+          badge.innerText = state.execConfirmedToday ? "[SYS: SHIELD ACTIVE]" : (state.engaged ? "[SYS: IN COMBAT]" : "[SYS: DROP ZONE]");
+          badge.className = "badge";
+          title.innerText = state.execConfirmedToday ? `>> EXEKUTIVNÍ ŠTÍT: D-${String(state.streak).padStart(2,'0')}` : (state.engaged ? ">> OPERACE AKTIVNÍ" : ">> PŘÍPRAVA NA VÝSADEK");
+          sub.innerText = "STAND DOWN VE 20:00";
         }
       }
 
