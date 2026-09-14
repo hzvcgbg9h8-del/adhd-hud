@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sk">
+<html lang="cs">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -279,15 +279,16 @@
 <body>
 
   <div class="terminal">
+    <!-- TOP HUD -->
     <div class="hud-header">
       <div class="hud-meta">
-        <span>/// BLACK_OPPS // TERMINAL</span>
-        <span id="sysBadge" class="badge">SYS: ACTIVE</span>
+        <span>/// BLACK_OPPS // TERMINÁL</span>
+        <span id="sysBadge" class="badge">SYS: AKTIVNÍ</span>
       </div>
 
       <div>
-        <div id="hudTitle" class="hud-status-line">Pripravený na operácie</div>
-        <div id="hudSub" class="hud-sub">STAND DOWN O 20:00 // LINIA KONTROLY</div>
+        <div id="hudTitle" class="hud-status-line">Připraven k operacím</div>
+        <div id="hudSub" class="hud-sub">STAND DOWN VE 20:00 // LINIE KONTROLY</div>
       </div>
 
       <div class="tele-grid">
@@ -310,8 +311,9 @@
       </div>
     </div>
 
+    <!-- ACTIONS AREA -->
     <div class="actions-zone">
-      <span class="section-title">DENNÉ KONTROLNÉ BODY</span>
+      <span class="section-title">DENNÍ KONTROLNÍ BODY</span>
       
       <div class="grid-2">
         <button id="btnMedic" class="btn" onclick="toggleMedic()">
@@ -319,42 +321,44 @@
             <span class="btn-icon">🧪</span>
             <span>Medic</span>
           </div>
-          <span id="stateMedic" class="btn-state">ČAKÁ</span>
+          <span id="stateMedic" class="btn-state">ČEKÁ</span>
         </button>
 
         <button id="btnPhd" class="btn" onclick="addPhd()">
           <div class="btn-left">
             <span class="btn-icon">📡</span>
-            <span>PhD Výskum</span>
+            <span>PhD Výzkum</span>
           </div>
           <span id="statePhd" class="btn-state">0/3</span>
         </button>
       </div>
 
-      <span class="section-title">HLAVNÁ FÁZA DŇA</span>
+      <span class="section-title">HLAVNÍ FÁZE DNE</span>
 
+      <!-- Dynamické hlavní tlačítko -->
       <button id="btnMainDynamic" class="btn btn-primary" onclick="handleMainAction()">
         <div class="btn-left">
           <span id="iconMain" class="btn-icon">🪂</span>
-          <span id="labelMain">Potvrdiť ENGAGED</span>
+          <span id="labelMain">Potvrdit ENGAGED</span>
         </div>
-        <span id="stateMain" class="btn-state">AKCIA</span>
+        <span id="stateMain" class="btn-state">AKCE</span>
       </button>
 
       <button id="btnExecShield" class="btn" onclick="confirmExec()">
         <div class="btn-left">
           <span class="btn-icon">🧱</span>
-          <span>Exekutívny štít</span>
+          <span>Exekutivní štít</span>
         </div>
-        <span id="stateExec" class="btn-state">POTVRDIŤ</span>
+        <span id="stateExec" class="btn-state">POTVRDIT</span>
       </button>
 
+      <!-- Noční protokol / Bed log -->
       <button id="btnNight" class="btn" style="display: none;" onclick="recordLightsOut()">
         <div class="btn-left">
           <span class="btn-icon">🌙</span>
           <span id="labelNight">Protokol LIGHTS OUT</span>
         </div>
-        <span id="stateNight" class="btn-state">SPÁNOK</span>
+        <span id="stateNight" class="btn-state">SPÁNEK</span>
       </button>
 
       <span class="section-title">PROTOKOLY & DEBRIEF</span>
@@ -378,6 +382,7 @@
       </div>
     </div>
 
+    <!-- FOOTER -->
     <div class="footer">
       <span id="objMilestone">OBJ: T-D DO 12.</span>
       <span id="sleepStat">BED: --:--</span>
@@ -385,33 +390,36 @@
     </div>
   </div>
 
+  <!-- MODAL: STAND DOWN -->
   <div id="standDownModal" class="modal">
     <div class="modal-box" style="border-color: var(--alert);">
-      <div class="modal-title" style="color: var(--alert);">⚠️ NÚDZOVÝ PROTOKOL // STAND DOWN</div>
-      <p>1. <strong>Kognitívny klam:</strong> Mozog hľadá lacný dopamín.</p>
-      <p>2. <strong>Matematika:</strong> Prohra je istá, výhra neexistuje.</p>
-      <p>3. <strong>Fyzický reset:</strong> Vypi pohár vody + vezmi rýchly cukor.</p>
-      <p>4. <strong>Pravidlo 180 s:</strong> Zákaz akejkoľvek akcie počas odpočtu.</p>
-      <button class="modal-action btn-m-alert" onclick="closeStandDown()">ROZKAZ. DRŽÍM LÍNIU.</button>
+      <div class="modal-title" style="color: var(--alert);">⚠️ NOUZOVÝ PROTOKOL // STAND DOWN</div>
+      <p>1. <strong>Kognitivní klam:</strong> Mozek hledá levný dopamin.</p>
+      <p>2. <strong>Matematika:</strong> Prohra je jistá, výhra neexistuje.</p>
+      <p>3. <strong>Fyzický reset:</strong> Vypij sklenici vody + vezmi rychlý cukr.</p>
+      <p>4. <strong>Pravidlo 180 s:</strong> Zákaz jakékoliv akce během odpočtu.</p>
+      <button class="modal-action btn-m-alert" onclick="closeStandDown()">ROZKAZ. DRŽÍM LINII.</button>
     </div>
   </div>
 
+  <!-- MODAL: INTEGRITY VERIFICATION -->
   <div id="integrityModal" class="modal">
     <div class="modal-box">
-      <div class="modal-title" style="color: var(--accent);">🛡️ OVERENIE EXEKUTÍVNEJ KONTROLY</div>
-      <p>Boli obranné mechanizmy a sebadisciplína udržané po celý deň bez zlyhania?</p>
-      <button class="modal-action btn-m-safe" onclick="resolveIntegrity(true)">🛡️ LÍNIA UDRŽANÁ (+1 STREAK)</button>
-      <button class="modal-action btn-m-alert" onclick="resolveIntegrity(false)">❌ PERIMETER PRELOMENÝ (RESET)</button>
-      <button class="modal-action btn-m-cancel" onclick="closeIntegrityModal()">ZRUŠIŤ</button>
+      <div class="modal-title" style="color: var(--accent);">🛡️ OVĚŘENÍ EXEKUTIVNÍ KONTROLY</div>
+      <p>Byly obranné mechanismy a sebedisciplína udrženy po celý den bez selhání?</p>
+      <button class="modal-action btn-m-safe" onclick="resolveIntegrity(true)">🛡️ LINIE UDRŽENA (+1 STREAK)</button>
+      <button class="modal-action btn-m-alert" onclick="resolveIntegrity(false)">❌ PERIMETR PROLOMEN (RESET)</button>
+      <button class="modal-action btn-m-cancel" onclick="closeIntegrityModal()">ZRUŠIT</button>
     </div>
   </div>
 
+  <!-- MODAL: DEBRIEF -->
   <div id="debriefModal" class="modal">
     <div class="modal-box">
       <div class="modal-title" style="color: var(--accent);">📻 TAKTICKÝ DEBRIEF</div>
-      <p>Potvrdiť absolvovanie mentálnej rekalibrácie jednotky? (+1 k mesačnej kvóte 2/2)</p>
-      <button class="modal-action btn-m-safe" onclick="confirmDebriefSuccess()">✅ POTVRDIŤ DEBRIEF</button>
-      <button class="modal-action btn-m-cancel" onclick="closeDebriefModal()">ZRUŠIŤ</button>
+      <p>Potvrdit absolvování mentální rekalibrace jednotky? (+1 k měsíční kvótě 2/2)</p>
+      <button class="modal-action btn-m-safe" onclick="confirmDebriefSuccess()">✅ POTVRDIT DEBRIEF</button>
+      <button class="modal-action btn-m-cancel" onclick="closeDebriefModal()">ZRUŠIT</button>
     </div>
   </div>
 
@@ -482,7 +490,7 @@
     async function syncCloudState(customState = null) {
       const targetState = customState || state;
       const sync = document.getElementById("syncStatus");
-      sync.innerText = "SYNC: SAVE...";
+      sync.innerText = "SYNC: ULOŽIT...";
       try {
         let res = await fetch(API_URL, {
           method: "PUT",
@@ -612,9 +620,9 @@
       document.getElementById("objMilestone").innerText = `OBJ: T-${diffDays}D DO 12.`;
       document.getElementById("sleepStat").innerText = state.bedtime ? `BED: ${state.bedtime} ✓` : "BED: --:--";
 
-      // TELEMETRIA
+      // TELEMETRIE
       const tMed = document.getElementById("teleMedic");
-      tMed.innerText = state.atomoxetin ? "AKTÍVNY" : "OFF";
+      tMed.innerText = state.atomoxetin ? "AKTIVNÍ" : "OFF";
       tMed.style.color = state.atomoxetin ? "var(--accent)" : "var(--alert)";
 
       const tOps = document.getElementById("teleOps");
@@ -637,15 +645,15 @@
       tExec.innerText = `D-${String(state.streak).padStart(2,'0')}`;
       tExec.style.color = state.execFailedToday ? "var(--alert)" : (state.execConfirmedToday ? "var(--accent)" : "var(--text-muted)");
 
-      // TLAČIDLÁ KONTROLNÝCH BODOV
+      // TLAČÍTKA KONTROLNÍCH BODŮ
       const bMedic = document.getElementById("btnMedic");
       const sMedic = document.getElementById("stateMedic");
       if (state.atomoxetin) {
         bMedic.className = "btn btn-done";
-        sMedic.innerText = "SPLNENÉ";
+        sMedic.innerText = "SPLNĚNO";
       } else {
         bMedic.className = "btn";
-        sMedic.innerText = "ČAKÁ";
+        sMedic.innerText = "ČEKÁ";
       }
 
       const bPhd = document.getElementById("btnPhd");
@@ -653,7 +661,7 @@
       sPhd.innerText = `${state.phdHours}/3`;
       bPhd.className = state.phdHours === 3 ? "btn btn-done" : "btn";
 
-      // HLAVNÁ DYNAMICKÁ AKCIA
+      // HLAVNÍ DYNAMICKÁ AKCE
       const bMain = document.getElementById("btnMainDynamic");
       const iconMain = document.getElementById("iconMain");
       const labelMain = document.getElementById("labelMain");
@@ -668,50 +676,50 @@
         btnNight.style.display = "flex";
         if (state.bedtime) {
           btnNight.className = "btn btn-done";
-          document.getElementById("labelNight").innerText = `Už spíš (${state.bedtime})`;
-          document.getElementById("stateNight").innerText = "ZAZNAMENANÉ";
+          document.getElementById("labelNight").innerText = `Spánek zaznamenán (${state.bedtime})`;
+          document.getElementById("stateNight").innerText = "ULOŽENO";
         } else {
           btnNight.className = "btn";
           document.getElementById("labelNight").innerText = "Protokol LIGHTS OUT";
-          document.getElementById("stateNight").innerText = "JÍSŤ SPAŤ";
+          document.getElementById("stateNight").innerText = "JÍT SPÁT";
         }
 
         if (state.execFailedToday) {
           bMain.className = "btn btn-alert";
           iconMain.innerText = "🚨";
-          labelMain.innerText = "Perimeter prelomený";
+          labelMain.innerText = "Perimetr prolomen";
           stateMain.innerText = "FAILED";
           badge.innerText = "SYS: BREACH";
           badge.className = "badge badge-alert";
-          title.innerText = "Exekutíva zlyhala";
-          sub.innerText = "REŠTARTUJ SYSTÉM PRE NOVÝ DEŇ";
+          title.innerText = "Exekutiva selhala";
+          sub.innerText = "RESTARTUJ SYSTÉM PRO NOVÝ DEN";
         } else if (state.integrityLocked && allObjectivesDone) {
           bMain.className = "btn btn-done";
           iconMain.innerText = "🏆";
-          labelMain.innerText = "Dnešná misia úspešná";
-          stateMain.innerText = "SPLNENÉ";
+          labelMain.innerText = "Dnešní mise úspěšná";
+          stateMain.innerText = "SPLNĚNO";
           badge.innerText = "SYS: VICTORY";
           badge.className = "badge";
-          title.innerText = "Všetky ciele dňa splnené";
-          sub.innerText = "REGENERÁCIA POVOLENÁ";
+          title.innerText = "Všechny cíle dne splněny";
+          sub.innerText = "REGENERACE POVOLENA";
         } else if (state.integrityLocked) {
           bMain.className = "btn btn-done";
           iconMain.innerText = "🔒";
-          labelMain.innerText = "Základňa uzamknutá";
+          labelMain.innerText = "Základna uzamčena";
           stateMain.innerText = "LOCKED";
           badge.innerText = "SYS: LOCKED";
           badge.className = "badge";
-          title.innerText = "Perimeter zaistený";
-          sub.innerText = "POVOLENÝ ODDYCH";
+          title.innerText = "Perimetr zajištěn";
+          sub.innerText = "POVOLEN ODPOČINEK";
         } else {
           bMain.className = "btn btn-warn";
           iconMain.innerText = "⚠️";
-          labelMain.innerText = "Overiť integritu sebaovládania";
-          stateMain.innerText = "OVERIŤ";
+          labelMain.innerText = "Ověřit integritu sebekontroly";
+          stateMain.innerText = "OVĚŘIT";
           badge.innerText = "SYS: VERIFY REQ";
           badge.className = "badge badge-warn";
-          title.innerText = "Čaká sa na večernú verifikáciu";
-          sub.innerText = "POTVRĎ UDRŽANIE LÍNIE";
+          title.innerText = "Čeká se na večerní verifikaci";
+          sub.innerText = "POTVRĎ UDRŽENÍ LINIE";
         }
 
       } else if (isPostCeasefire) {
@@ -719,21 +727,21 @@
         if (state.ceasefireConfirmed) {
           bMain.className = "btn btn-done";
           iconMain.innerText = "🛡️";
-          labelMain.innerText = "Bezpečne na základni (RTB)";
-          stateMain.innerText = "ZAISTENÉ";
+          labelMain.innerText = "Bezpečně na základně (RTB)";
+          stateMain.innerText = "ZAJIŠTĚNO";
           badge.innerText = "SYS: AT BASE";
           badge.className = "badge";
-          title.innerText = "Kľud zbraní aktívny";
-          sub.innerText = "ZÁKAZ NOVEJ PRÁCE // ODDYCH";
+          title.innerText = "Klid zbraní aktivní";
+          sub.innerText = "ZÁKAZ NOVÉ PRÁCE // ODPOČINEK";
         } else {
           bMain.className = "btn btn-warn";
           iconMain.innerText = "🛑";
           labelMain.innerText = "Ceasefire: Return to Base";
-          stateMain.innerText = "UKONČIŤ";
+          stateMain.innerText = "UKONČIT";
           badge.innerText = "SYS: CEASEFIRE";
           badge.className = "badge badge-warn";
-          title.innerText = "Čas na návrat na základňu";
-          sub.innerText = "UKONČI VŠETKY AKTIVITY DO 20:00";
+          title.innerText = "Čas pro návrat na základnu";
+          sub.innerText = "UKONČI VŠECHNY AKTIVITY DO 20:00";
         }
 
       } else {
@@ -741,25 +749,25 @@
         if (state.engaged) {
           bMain.className = "btn btn-done";
           iconMain.innerText = "⚡";
-          labelMain.innerText = "Operácie aktívne (Engaged)";
+          labelMain.innerText = "Operace aktivní (Engaged)";
           stateMain.innerText = "V BOJI";
           badge.innerText = "SYS: ENGAGED";
           badge.className = "badge";
-          title.innerText = "Bojové operácie prebiehajú";
-          sub.innerText = "STAND DOWN O 20:00";
+          title.innerText = "Bojové operace probíhají";
+          sub.innerText = "STAND DOWN VE 20:00";
         } else {
           bMain.className = "btn btn-primary";
           iconMain.innerText = "🪂";
-          labelMain.innerText = "Zahájiť výsadok (Engage)";
-          stateMain.innerText = "ŠTART";
+          labelMain.innerText = "Zahájit výsadek (Engage)";
+          stateMain.innerText = "START";
           badge.innerText = "SYS: READY";
           badge.className = "badge";
-          title.innerText = "Príprava na výsadok";
-          sub.innerText = "POTVRĎ ŠTART PRÁCE";
+          title.innerText = "Příprava na výsadek";
+          sub.innerText = "POTVRĎ START PRÁCE";
         }
       }
 
-      // EXEKUTÍVNY ŠTÍT
+      // EXEKUTIVNÍ ŠTÍT
       const bExec = document.getElementById("btnExecShield");
       const sExec = document.getElementById("stateExec");
       if (state.execConfirmedToday) {
@@ -767,7 +775,7 @@
         sExec.innerText = `D-${String(state.streak).padStart(2,'0')} ✓`;
       } else {
         bExec.className = "btn";
-        sExec.innerText = "POTVRDIŤ";
+        sExec.innerText = "POTVRDIT";
       }
 
       // DEBRIEF
