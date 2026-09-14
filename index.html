@@ -26,26 +26,29 @@
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     html, body {
       width: 100%;
-      min-height: 100%;
+      height: 100%;
+      height: 100dvh;
       background-color: var(--bg);
       color: var(--text);
       font-family: 'Menlo', 'Courier New', monospace;
+      overflow: hidden;
     }
     body {
       display: flex;
       flex-direction: column;
-      padding: calc(env(safe-area-inset-top, 12px) + 8px) 12px calc(env(safe-area-inset-bottom, 12px) + 8px) 12px;
+      padding: calc(env(safe-area-inset-top, 8px) + 4px) 10px calc(env(safe-area-inset-bottom, 8px) + 6px) 10px;
     }
     .hud-terminal {
       width: 100%;
+      height: 100%;
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       background-color: var(--card);
       border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 16px 14px;
+      border-radius: 12px;
+      padding: 14px 12px;
       box-shadow: 0 0 25px rgba(34, 197, 94, 0.15);
     }
     .header {
@@ -54,7 +57,7 @@
       font-size: 11px;
       font-weight: bold;
       color: var(--text-muted);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     .badge { color: var(--accent); }
     .badge-alert { color: var(--alert); }
@@ -62,8 +65,8 @@
     .badge-gold { color: var(--gold); }
     .badge-cyan { color: var(--cyan); }
 
-    .countdown-box { margin-bottom: 12px; }
-    .countdown-title { font-size: 14px; font-weight: bold; color: #fff; line-height: 1.3; }
+    .countdown-box { margin-bottom: 10px; }
+    .countdown-title { font-size: 13.5px; font-weight: bold; color: #fff; line-height: 1.25; }
     .countdown-sub { font-size: 9px; color: var(--text-muted); margin-top: 3px; line-height: 1.3; }
 
     .tele-bar {
@@ -72,9 +75,9 @@
       gap: 4px;
       background-color: rgba(0,0,0,0.5);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 4px;
-      margin-bottom: 12px;
+      border-radius: 6px;
+      padding: 7px 4px;
+      margin-bottom: 10px;
       text-align: center;
       font-size: 9px;
     }
@@ -86,7 +89,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     .btn {
       background-color: #0d1e0d;
@@ -94,9 +97,9 @@
       border-radius: 8px;
       color: var(--text);
       font-family: inherit;
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: bold;
-      padding: 14px 6px;
+      padding: 13px 4px;
       text-align: center;
       display: block;
       cursor: pointer;
@@ -111,6 +114,11 @@
       border-color: var(--text-muted);
       color: var(--text-muted);
       opacity: 0.6;
+    }
+    .btn-locked {
+      cursor: default !important;
+      pointer-events: none !important;
+      opacity: 0.9 !important;
     }
     .btn-full { grid-column: span 2; }
     .btn-orange {
@@ -132,10 +140,6 @@
       background: linear-gradient(180deg, #1c1300 0%, #0d0900 100%);
       box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
     }
-    .btn-reward:active {
-      background: #2e1d03;
-      border-color: var(--gold);
-    }
 
     .btn-failed {
       border-color: #7f1d1d;
@@ -156,8 +160,8 @@
       font-size: 9px;
       color: var(--text-muted);
       border-top: 1px solid var(--border);
-      padding-top: 10px;
-      margin-top: 10px;
+      padding-top: 8px;
+      margin-top: 6px;
     }
 
     .modal {
@@ -195,6 +199,11 @@
       background: #0d2818;
       border-color: var(--accent);
       color: var(--accent);
+    }
+    .modal-btn-cancel {
+      background: #111;
+      border-color: #333;
+      color: #888;
     }
   </style>
 </head>
@@ -243,7 +252,7 @@
       <button id="btnCeasefireRtb" class="btn btn-full btn-cyan" onclick="confirmCeasefireRtb()"></button>
       <button id="btnFinalLockdown" class="btn btn-full" onclick="openIntegrityModal()"></button>
 
-      <button id="btnDebrief" class="btn btn-full" onclick="addDebrief()">📻 [COMMS] TAC_DEBRIEF (0/2)</button>
+      <button id="btnDebrief" class="btn btn-full" onclick="openDebriefModal()">📻 [COMMS] TACTICAL DEBRIEF (0/2)</button>
       <button class="btn btn-full btn-alert" onclick="openStandDown()">🚨 [PROTOCOL] STAND DOWN</button>
     </div>
 
@@ -261,7 +270,7 @@
       <p>2. Prohra je matematická jistota. Výhra neexistuje.</p>
       <p>3. Vypij velkou sklenici studené vody.</p>
       <p>4. Dej si rychlý cukr (glukóza pro prefrontální kortex).</p>
-      <p>5. Pravidlo 180 vteřin: Zákaz jakékoliv finanční transakce.</p>
+      <p>5. Pravidlo 180 vteřin: Zákaz jakékoliv neautorizované akce.</p>
       <button class="modal-btn" onclick="closeStandDown()">ROZKAZ. DRŽÍM LINII.</button>
     </div>
   </div>
@@ -270,9 +279,19 @@
     <div class="modal-content">
       <div class="modal-title">🛡️ VERIFIKACE EXECUTIVE CONTROL</div>
       <p>[ZÁVĚREČNÁ PROVĚRKA CELÉHO DNE]</p><br>
-      <p>Byla obranná linie kortexu udržena po celý den a večer bez propadu do gamingu či zakázaných aktivit?</p>
+      <p>Byla obranná linie kortexu udržena po celý den a večer bez infiltrace, ztráty sebekontroly a neautorizovaných aktivit?</p>
       <button class="modal-btn modal-btn-safe" onclick="resolveIntegrity(true)">🛡️ [PERIMETER INTACT] LINIE UDRŽENA (+1 STREAK)</button>
-      <button class="modal-btn" onclick="resolveIntegrity(false)">❌ [BREACH CONFIRMED] PROLOMENO (MISSION FAILED)</button>
+      <button class="modal-btn" onclick="resolveIntegrity(false)">❌ [BREACH CONFIRMED] PERIMETR PROLOMEN (MISSION FAILED)</button>
+    </div>
+  </div>
+
+  <div id="debriefModal" class="modal">
+    <div class="modal-content" style="border-color: var(--accent); background: #081408;">
+      <div class="modal-title" style="color: var(--accent);">📻 POTVRZENÍ TACTICAL DEBRIEF</div>
+      <p>[MENTÁLNÍ REKALIBRACE JEDNOTKY]</p><br>
+      <p>Potvrdit absolvování mentální rekalibrace jednotky? (+1 k měsíční kvótě DEBRIEF 2/2)</p>
+      <button class="modal-btn modal-btn-safe" onclick="confirmDebriefSuccess()">✅ [CONFIRM] REKALIBRACE DOKONČENA</button>
+      <button class="modal-btn modal-btn-cancel" onclick="closeDebriefModal()">ZRUŠIT</button>
     </div>
   </div>
 
@@ -294,6 +313,7 @@
       streak: 0,
       execConfirmedToday: false,
       execFailedToday: false,
+      integrityLocked: false,
       debriefCount: 0,
       tacticalRetreat: false
     };
@@ -324,6 +344,7 @@
             record.phdHours = 0;
             record.execConfirmedToday = false;
             record.execFailedToday = false;
+            record.integrityLocked = false;
             record.tacticalRetreat = false;
             syncCloudState(record);
           }
@@ -406,20 +427,36 @@
       syncCloudState();
     }
 
-    function addDebrief() {
-      state.debriefCount = state.debriefCount >= 2 ? 0 : state.debriefCount + 1;
-      render();
-      syncCloudState();
+    function openDebriefModal() {
+      if (state.debriefCount >= 2) return;
+      document.getElementById("debriefModal").style.display = "flex";
+    }
+    function closeDebriefModal() { document.getElementById("debriefModal").style.display = "none"; }
+
+    function confirmDebriefSuccess() {
+      closeDebriefModal();
+      if (state.debriefCount < 2) {
+        state.debriefCount += 1;
+        render();
+        syncCloudState();
+      }
     }
 
     function openStandDown() { document.getElementById("standDownModal").style.display = "flex"; }
     function closeStandDown() { document.getElementById("standDownModal").style.display = "none"; }
 
-    function openIntegrityModal() { document.getElementById("integrityModal").style.display = "flex"; }
+    function openIntegrityModal() {
+      if (state.integrityLocked) return;
+      document.getElementById("integrityModal").style.display = "flex";
+    }
     function closeIntegrityModal() { document.getElementById("integrityModal").style.display = "none"; }
 
     function resolveIntegrity(isSuccess) {
       closeIntegrityModal();
+      if (state.integrityLocked) return;
+
+      state.integrityLocked = true;
+
       if (isSuccess) {
         if (!state.execConfirmedToday) {
           state.streak += 1;
@@ -476,41 +513,37 @@
       let diffDays = curD <= 12 ? (12 - curD) : (30 - curD + 12);
       document.getElementById("objMilestone").innerText = `OBJ: T-${diffDays}D DO 12.`;
 
-      // 1. Telemetrie MEDIC (Splněno = zelená)
       const tMed = document.getElementById("teleMedic");
       tMed.innerText = state.atomoxetin ? "IN POS ✓" : "STANDBY";
       tMed.style.color = state.atomoxetin ? "var(--accent)" : "var(--alert)";
 
-      // 2. Telemetrie OPS (Splněno = zelená)
       const tOps = document.getElementById("teleOps");
       if (isLockdown) {
         if (state.execFailedToday) {
           tOps.innerText = "FAILED ❌";
           tOps.style.color = "var(--alert)";
-        } else if (!isExecSafe) {
+        } else if (state.integrityLocked && allObjectivesDone) {
+          tOps.innerText = "MISSION OK ✓";
+          tOps.style.color = "var(--accent)";
+        } else if (state.integrityLocked) {
+          tOps.innerText = "LOCKED ✓";
+          tOps.style.color = "var(--accent)";
+        } else {
           tOps.innerText = "VERIFY REQ";
           tOps.style.color = "var(--orange)";
-        } else if (allObjectivesDone) {
-          tOps.innerText = "VICTORY ✓";
-          tOps.style.color = "var(--accent)"; // SJEDNOCENO: zelená
-        } else {
-          tOps.innerText = "LOCKED";
-          tOps.style.color = "var(--accent)"; // SJEDNOCENO: zelená
         }
       } else if (isPostCeasefire) {
         tOps.innerText = state.ceasefireConfirmed ? "SECURED ✓" : "RTB REQUIRED";
-        tOps.style.color = state.ceasefireConfirmed ? "var(--accent)" : "var(--alert)"; // SJEDNOCENO: zelená
+        tOps.style.color = state.ceasefireConfirmed ? "var(--accent)" : "var(--alert)";
       } else {
         tOps.innerText = state.engaged ? "ENGAGED ✓" : "DROP ZONE";
         tOps.style.color = state.engaged ? "var(--accent)" : "var(--text-muted)";
       }
 
-      // 3. Telemetrie PhD (Splněno 3/3 = zelená, rozpracováno = jemně zelená, 0 = šedá)
       const tPhd = document.getElementById("telePhd");
       tPhd.innerText = `${state.phdHours}/3`;
       tPhd.style.color = state.phdHours === 3 ? "var(--accent)" : (state.phdHours > 0 ? "var(--text)" : "var(--text-muted)");
 
-      // 4. Telemetrie EXEC (Splněno = zelená)
       const tExec = document.getElementById("teleExec");
       tExec.innerText = `D-${String(state.streak).padStart(2,'0')} ${state.execConfirmedToday ? "✓" : (state.execFailedToday ? "❌" : "!")}`;
       tExec.style.color = state.execFailedToday ? "var(--alert)" : (state.execConfirmedToday ? "var(--accent)" : "var(--text-muted)");
@@ -534,40 +567,39 @@
       btnLockdown.style.display = "none";
       btnEng.style.display = "none";
       rBtn.style.display = "none";
-
-      btnExec.className = "btn btn-full" + (state.execConfirmedToday ? " btn-done" : "");
+      btnExec.style.display = "none";
 
       if (isLockdown) {
         btnLockdown.style.display = "block";
 
         if (state.execFailedToday) {
           btnLockdown.innerText = "🚨 [MISSION FAILED] PERIMETER BREACHED";
-          btnLockdown.className = "btn btn-full btn-failed";
+          btnLockdown.className = "btn btn-full btn-failed btn-locked";
           badge.innerText = "[SYS: MISSION FAILED]";
           badge.className = "badge badge-alert";
           title.innerText = ">> DEFENSE PERIMETER BREACHED // FAILED";
-          sub.innerText = "EXEKUTIVNÍ KONTROLA SELHALA // ZAHÁJIT NOUZOVÝ DEBRIEF";
-        } else if (!isExecSafe) {
+          sub.innerText = "EXEKUTIVNÍ KONTROLA KOMPROMITOVÁNA // ZAHÁJIT NOUZOVÝ DEBRIEF";
+        } else if (state.integrityLocked && allObjectivesDone) {
+          btnLockdown.innerText = "🏆 [ALL OBJECTIVES SECURED] MISSION ACCOMPLISHED";
+          btnLockdown.className = "btn btn-full btn-reward btn-locked";
+          badge.innerText = "[SYS: MISSION ACCOMPLISHED]";
+          badge.className = "badge badge-gold";
+          title.innerText = ">> DNEŠNÍ BITVA VYHRÁNA // LINIE UDRŽENA";
+          sub.innerText = `ŽÁDNÉ ZTRÁTY // ${intel.sub} // REGENERACE POVOLENA`;
+        } else if (state.integrityLocked) {
+          btnLockdown.innerText = "🔒 [BASE LOCKDOWN] PERIMETER SECURED";
+          btnLockdown.className = "btn btn-full btn-done btn-locked";
+          badge.innerText = "[SYS: BASE LOCKDOWN]";
+          badge.className = "badge badge-cyan";
+          title.innerText = ">> BASE LOCKDOWN // KONTROLA UDRŽENA";
+          sub.innerText = `EXEKUTIVA ZAJIŠTĚNA // ${intel.sub}`;
+        } else {
           btnLockdown.innerText = "🚨 [POSSIBLE BREACH ALERT] VERIFY EXEC INTEGRITY";
           btnLockdown.className = "btn btn-full btn-orange";
           badge.innerText = "[SYS: VERIFY REQUIRED]";
           badge.className = "badge badge-orange";
           title.innerText = ">> BASE LOCKDOWN // ČEKÁ SE NA VERIFIKACI";
-          sub.innerText = `${intel.sub} // POTVRĎ INTEGRITU DNE`;
-        } else if (allObjectivesDone) {
-          btnLockdown.innerText = "🏆 [ALL OBJECTIVES SECURED] FULL VICTORY";
-          btnLockdown.className = "btn btn-full btn-reward";
-          badge.innerText = "[SYS: MISSION ACCOMPLISHED]";
-          badge.className = "badge badge-gold";
-          title.innerText = ">> DNEŠNÍ BITVA VYHRÁNA // LINIE UDRŽENA";
-          sub.innerText = `ŽÁDNÉ ZTRÁTY // ${intel.sub} // REGENERACE POVOLENA`;
-        } else {
-          btnLockdown.innerText = "🔒 [BASE LOCKDOWN] PERIMETER SECURED";
-          btnLockdown.className = "btn btn-full btn-done";
-          badge.innerText = "[SYS: BASE LOCKDOWN]";
-          badge.className = "badge badge-cyan";
-          title.innerText = ">> BASE LOCKDOWN // KONTROLA UDRŽENA";
-          sub.innerText = `EXEKUTIVA ZAJIŠTĚNA // ${intel.sub}`;
+          sub.innerText = `${intel.sub} // POTVRĎ INTEGRITU PERIMETRU`;
         }
 
       } else if (isPostCeasefire) {
@@ -590,6 +622,9 @@
         }
 
       } else {
+        btnExec.style.display = "block";
+        btnExec.className = "btn btn-full" + (state.execConfirmedToday ? " btn-done" : "");
+
         if (!state.engaged) {
           btnEng.style.display = "block";
           btnEng.innerText = "🪂 [CONFIRM] ENGAGED";
@@ -611,7 +646,7 @@
             badge.innerText = "[SYS: SHIELD ACTIVE]";
             badge.className = "badge";
             title.innerText = `>> EXEKUTIVNÍ ŠTÍT: D-${String(state.streak).padStart(2,'0')} V LINII`;
-            sub.innerText = `DOPAMIN POD KONTROLOU // ${intel.sub}`;
+            sub.innerText = `DISCIPLÍNA ZAJIŠTĚNA // PERIMETR STABILNÍ // ${intel.sub}`;
           } else if (state.engaged) {
             badge.innerText = "[SYS: IN COMBAT]";
             badge.className = "badge";
@@ -626,7 +661,9 @@
         }
       }
 
-      document.getElementById("btnDebrief").innerText = `📻 [COMMS] TAC_DEBRIEF (${state.debriefCount}/2)`;
+      const debBtn = document.getElementById("btnDebrief");
+      debBtn.innerText = `📻 [COMMS] TACTICAL DEBRIEF (${state.debriefCount}/2)`;
+      debBtn.className = "btn btn-full" + (state.debriefCount >= 2 ? " btn-done btn-locked" : "");
     }
 
     loadCloudState();
