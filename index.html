@@ -191,7 +191,6 @@
       background: var(--card-inner);
     }
 
-    /* DVOUŘÁDKOVÁ TLAČÍTKA BEZ MEZERY U ZÁVORKY S VYROVNANÝM STŘEDEM */
     .btn-stacked {
       height: 54px;
       min-height: 54px;
@@ -222,7 +221,7 @@
 
     .btn-stacked .val-ico {
       font-size: 11px;
-      margin-right: 0px; /* Žádná mezera před závorkou */
+      margin-right: 0px;
     }
 
     .btn-stacked .val-num {
@@ -239,11 +238,6 @@
       width: 12px;
       text-align: left;
       margin-left: 2px;
-    }
-
-    .btn-stacked .val-spacer {
-      width: 14px; /* Vyvažovací prvek pro dokonalý střed čísla */
-      display: inline-block;
     }
 
     .btn-done {
@@ -380,7 +374,6 @@
       <button id="btnFinalLockdown" class="btn btn-warn" style="display: none;" onclick="openIntegrityModal()">🚨 [POSSIBLE BREACH ALERT] VERIFY EXEC INTEGRITY</button>
       <button id="btnLightsOut" class="btn" style="display: none;" onclick="recordLightsOut()">🌙 [PROTOCOL] LIGHTS OUT // JÍT SPÁT</button>
 
-      <!-- 3-SLOUPOVÝ ROVNOBĚŽNÝ PANEL KVÓT BEZ MEZER -->
       <div class="row-split-3">
         <button id="btnDrill" class="btn btn-stacked" onclick="openDrillModal()">
           <span class="lbl">[DRILL]</span>
@@ -707,7 +700,9 @@
     function recordLightsOut() {
       if (state.bedtime) return;
       const now = new Date();
-      const timeStr = now.toTimeString().slice(0, 5);
+      const hrs = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const timeStr = `${hrs}:${mins}`;
       state.bedtime = timeStr;
       if (!state.sleepHistory) state.sleepHistory = [];
       state.sleepHistory.push({ date: getTodayStr(), time: timeStr });
@@ -721,7 +716,7 @@
       const min = now.getMinutes();
 
       const isPostCeasefire = (hr >= 20);
-      const isLockdown = (hr > 22 || (hr === 22 && min >= 30));
+      const isLockdown = (hr > 22 || (hr === 22 && min >= 30) || hr < 4);
       const isExecSafe = state.execConfirmedToday;
       const allObjectivesDone = (state.atomoxetin && state.phdHours >= 3 && isExecSafe);
 
@@ -798,6 +793,13 @@
           bLockdown.innerText = "⚠️ [BREACH CONFIRMED] MISSION FAILED";
           bLockdown.className = "btn btn-alert btn-locked";
           bNight.style.display = "flex";
+          if (state.bedtime) {
+            bNight.innerText = `🌙 [RECORDED] LIGHTS OUT (${state.bedtime} ✓)`;
+            bNight.className = "btn btn-done btn-locked";
+          } else {
+            bNight.innerText = "🌙 [PROTOCOL] LIGHTS OUT // JÍT SPÁT";
+            bNight.className = "btn";
+          }
         } else {
           bExec.style.display = "flex";
           bExec.innerText = "⚠️ [BREACH CONFIRMED] D-00 RESET";
@@ -896,7 +898,6 @@
         }
       }
 
-      // VYKRESLENÍ KVÓT BEZ MEZERY U ZÁVORKY S VYROVNÁNÍM
       const bDrill = document.getElementById("btnDrill");
       const vDrill = document.getElementById("valDrill");
       const sDrill = document.getElementById("statDrill");
