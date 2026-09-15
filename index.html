@@ -59,7 +59,6 @@
       gap: 8px;
     }
 
-    /* HORNÍ HUD PANEL */
     .hud-header {
       background: var(--card);
       border: 1.5px solid var(--border);
@@ -144,7 +143,6 @@
       margin-top: 2px;
     }
 
-    /* OBLAST TLAČÍTEK */
     .controls-zone {
       display: flex;
       flex-direction: column;
@@ -193,31 +191,63 @@
       background: var(--card-inner);
     }
 
-    /* SPECIFICKÝ DVOUŘÁDKOVÝ DESIGN PRO KVÓTY */
+    /* MATEMATICKY VYROVNANÁ DVOUŘÁDKOVÁ TLAČÍTKA */
     .btn-stacked {
       height: 54px;
       min-height: 54px;
+      display: flex;
       flex-direction: column;
+      justify-content: center;
+      align-items: center;
       gap: 2px;
-      padding: 4px 2px;
+      padding: 4px 6px;
     }
+
     .btn-stacked .lbl {
       font-size: 9.5px;
       color: var(--text-muted);
       font-weight: 700;
+      letter-spacing: 0.5px;
+      text-align: center;
+      width: 100%;
     }
-    .btn-stacked .val {
+
+    .btn-stacked .val-row {
+      display: grid;
+      grid-template-columns: 16px 1fr 16px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .btn-stacked .val-ico {
+      font-size: 11px;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .btn-stacked .val-num {
       font-size: 11px;
       font-weight: 700;
       color: var(--text);
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-stacked .val-stat {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--accent);
+      text-align: center;
     }
 
     .btn-done {
       background: rgba(255, 255, 255, 0.02);
       border-color: var(--border);
+    }
+    .btn-done .lbl {
       color: var(--text-muted);
     }
-    .btn-done .val {
+    .btn-done .val-num {
       color: var(--accent);
     }
 
@@ -259,7 +289,6 @@
       flex-shrink: 0;
     }
 
-    /* MODÁLY */
     .modal {
       display: none;
       position: fixed;
@@ -300,7 +329,6 @@
 <body>
 
   <div class="terminal">
-    <!-- HORNÍ HUD -->
     <div class="hud-header">
       <div class="hud-topline">
         <span class="tag-title">/// BLACK_OPPS</span>
@@ -332,7 +360,6 @@
       </div>
     </div>
 
-    <!-- OBLAST TLAČÍTEK -->
     <div class="controls-zone">
       <div class="row-split">
         <button id="btnMedic" class="btn" onclick="toggleMedic()">🧪 [DEPLOY MEDIC]</button>
@@ -343,31 +370,41 @@
       <button id="btnExecShield" class="btn" onclick="openExecChoiceModal()">🧱 [SHIELD] EXECUTIVE CONTROL</button>
       <button id="btnRetreat" class="btn btn-warn" onclick="toggleRetreat()">🚁 [ABORT] TACTICAL RETREAT</button>
 
-      <!-- Večerní a noční tlačítka -->
       <button id="btnCeasefireRtb" class="btn btn-warn" style="display: none;" onclick="confirmCeasefireRtb()">🛑 [CONFIRM] CEASEFIRE // RETURN TO BASE</button>
       <button id="btnFinalLockdown" class="btn btn-warn" style="display: none;" onclick="openIntegrityModal()">🚨 [POSSIBLE BREACH ALERT] VERIFY EXEC INTEGRITY</button>
       <button id="btnLightsOut" class="btn" style="display: none;" onclick="recordLightsOut()">🌙 [PROTOCOL] LIGHTS OUT // JÍT SPÁT</button>
 
-      <!-- 3-SLOUPOVÝ DVOUŘÁDKOVÝ PANEL KVÓT (1:1:1) -->
+      <!-- 3-SLOUPOVÝ ROVNOBĚŽNÝ PANEL KVÓT -->
       <div class="row-split-3">
         <button id="btnDrill" class="btn btn-stacked" onclick="openDrillModal()">
-          <span class="lbl">⚔️ DRILL</span>
-          <span id="valDrill" class="val">[0/3]</span>
+          <span class="lbl">[DRILL]</span>
+          <div class="val-row">
+            <span class="val-ico">⚔️</span>
+            <span id="valDrill" class="val-num">[0/3]</span>
+            <span id="statDrill" class="val-stat"></span>
+          </div>
         </button>
         <button id="btnDebrief" class="btn btn-stacked" onclick="openDebriefModal()">
-          <span class="lbl">📻 DEBRIEF</span>
-          <span id="valDebrief" class="val">[0/2]</span>
+          <span class="lbl">[DEBRIEF]</span>
+          <div class="val-row">
+            <span class="val-ico">📻</span>
+            <span id="valDebrief" class="val-num">[0/2]</span>
+            <span id="statDebrief" class="val-stat"></span>
+          </div>
         </button>
         <button id="btnSupply" class="btn btn-stacked" onclick="openSupplyModal()">
-          <span class="lbl">🚚 SUPPLY</span>
-          <span id="valSupply" class="val">[0/2]</span>
+          <span class="lbl">[SUPPLY]</span>
+          <div class="val-row">
+            <span class="val-ico">🚚</span>
+            <span id="valSupply" class="val-num">[0/2]</span>
+            <span id="statSupply" class="val-stat"></span>
+          </div>
         </button>
       </div>
 
       <button class="btn btn-alert" onclick="openStandDown()">🚨 [PROTOCOL] STAND DOWN</button>
     </div>
 
-    <!-- PATIČKA -->
     <div class="footer">
       <span id="objMilestone">OBJ: T-D DO 12.</span>
       <span id="sleepStat">BED: --:--</span>
@@ -375,7 +412,6 @@
     </div>
   </div>
 
-  <!-- MODAL: ROZCESTNÍK EXECUTIVE CONTROL -->
   <div id="execChoiceModal" class="modal">
     <div class="modal-box" style="border-color: var(--border-bright);">
       <div class="modal-title" style="color: var(--text);">🧱 ROZCESTNÍK EXEKUTIVNÍ KONTROLY</div>
@@ -386,7 +422,6 @@
     </div>
   </div>
 
-  <!-- MODAL: STAND DOWN -->
   <div id="standDownModal" class="modal">
     <div class="modal-box" style="border-color: var(--alert); background: #140808;">
       <div class="modal-title" style="color: var(--alert);">⚠️ KLID ZBRANÍ // STAND DOWN</div>
@@ -400,7 +435,6 @@
     </div>
   </div>
 
-  <!-- MODAL: NOČNÍ INTEGRITY LOCKDOWN -->
   <div id="integrityModal" class="modal">
     <div class="modal-box">
       <div class="modal-title" style="color: var(--accent);">🛡️ VERIFIKACE EXECUTIVE CONTROL</div>
@@ -412,7 +446,6 @@
     </div>
   </div>
 
-  <!-- MODAL: DRILL (TÝDENNÍ CVIČENÍ) -->
   <div id="drillModal" class="modal">
     <div class="modal-box" style="border-color: var(--accent);">
       <div class="modal-title" style="color: var(--accent);">⚔️ BOJOVÝ VÝCVIK // COMBAT READINESS</div>
@@ -423,7 +456,6 @@
     </div>
   </div>
 
-  <!-- MODAL: DEBRIEF -->
   <div id="debriefModal" class="modal">
     <div class="modal-box" style="border-color: var(--accent);">
       <div class="modal-title" style="color: var(--accent);">📻 POTVRZENÍ TACTICAL DEBRIEF</div>
@@ -434,7 +466,6 @@
     </div>
   </div>
 
-  <!-- MODAL: SUPPLY RUN -->
   <div id="supplyModal" class="modal">
     <div class="modal-box" style="border-color: var(--accent);">
       <div class="modal-title" style="color: var(--accent);">🚚 LOGISTIKA // SUPPLY RUN</div>
@@ -499,14 +530,12 @@
           if (record.drillCount === undefined) { record.drillCount = 0; needsSync = true; }
           if (record.supplyCount === undefined) { record.supplyCount = 0; needsSync = true; }
 
-          // Týdenní reset (pondělí)
           if (!record.currentMonday || record.currentMonday !== thisMonday) {
             record.currentMonday = thisMonday;
             record.drillCount = 0;
             needsSync = true;
           }
 
-          // Měsíční reset
           if (!record.currentMonth || record.currentMonth !== thisMonth) {
             record.currentMonth = thisMonth;
             record.debriefCount = 0;
@@ -514,7 +543,6 @@
             needsSync = true;
           }
 
-          // Denní půlnoční reset
           if (record.date !== today) {
             record.date = today;
             record.atomoxetin = false;
@@ -702,7 +730,6 @@
       document.getElementById("objMilestone").innerText = `OBJ: T-${diffDays}D DO 12.`;
       document.getElementById("sleepStat").innerText = state.bedtime ? `BED: ${state.bedtime} ✓` : "BED: --:--";
 
-      // TELEMETRIE
       const tMed = document.getElementById("teleMedic");
       tMed.innerText = state.atomoxetin ? "IN POS ✓" : "STANDBY";
       tMed.style.color = state.atomoxetin ? "var(--accent)" : "var(--alert)";
@@ -732,7 +759,6 @@
       tExec.innerText = `D-${String(state.streak).padStart(2,'0')} ${state.execConfirmedToday ? "✓" : (state.execFailedToday ? "❌" : "!")}`;
       tExec.style.color = state.execFailedToday ? "var(--alert)" : (state.execConfirmedToday ? "var(--accent)" : "var(--text-muted)");
 
-      // TLAČÍTKA
       const bMedic = document.getElementById("btnMedic");
       bMedic.innerText = state.atomoxetin ? "🧪 [DEPLOYED ✓]" : "🧪 [DEPLOY MEDIC]";
       bMedic.className = "btn" + (state.atomoxetin ? " btn-done" : "");
@@ -761,7 +787,6 @@
       bLockdown.style.display = "none";
       bNight.style.display = "none";
 
-      // ABSOLUTNÍ PRIORITA: PERIMETER BREACH
       if (state.execFailedToday) {
         badge.innerText = "[SYS: MISSION FAILED]";
         badge.className = "badge badge-alert";
@@ -871,38 +896,49 @@
         }
       }
 
-      // DVOUŘÁDKOVÉ KVÓTY (1:1:1)
+      // KVÓTY S VYROVNANÝM TŘÍSLOUPCOVÝM ŘÁDKEM
       const bDrill = document.getElementById("btnDrill");
       const vDrill = document.getElementById("valDrill");
+      const sDrill = document.getElementById("statDrill");
       const dCnt = state.drillCount || 0;
+      vDrill.innerText = `[${dCnt}/3]`;
       if (dCnt === 3) {
-        vDrill.innerText = "[3/3 ✓]";
+        sDrill.innerText = "✓";
         bDrill.className = "btn btn-stacked btn-done";
       } else if (dCnt > 3) {
-        vDrill.innerText = `[${dCnt}/3 ★]`;
+        sDrill.innerText = "★";
         bDrill.className = "btn btn-stacked btn-done";
       } else {
-        vDrill.innerText = `[${dCnt}/3]`;
+        sDrill.innerText = "";
         bDrill.className = "btn btn-stacked";
       }
 
       const bDeb = document.getElementById("btnDebrief");
       const vDeb = document.getElementById("valDebrief");
+      const sDeb = document.getElementById("statDebrief");
       const debCnt = state.debriefCount || 0;
-      vDeb.innerText = (debCnt >= 2) ? "[2/2 ✓]" : `[${debCnt}/2]`;
-      bDeb.className = "btn btn-stacked" + (debCnt >= 2 ? " btn-done btn-locked" : "");
+      vDeb.innerText = `[${debCnt}/2]`;
+      if (debCnt >= 2) {
+        sDeb.innerText = "✓";
+        bDeb.className = "btn btn-stacked btn-done btn-locked";
+      } else {
+        sDeb.innerText = "";
+        bDeb.className = "btn btn-stacked";
+      }
 
       const bSup = document.getElementById("btnSupply");
       const vSup = document.getElementById("valSupply");
+      const sSup = document.getElementById("statSupply");
       const supCnt = state.supplyCount || 0;
+      vSup.innerText = `[${supCnt}/2]`;
       if (supCnt === 2) {
-        vSup.innerText = "[2/2 ✓]";
+        sSup.innerText = "✓";
         bSup.className = "btn btn-stacked btn-done";
       } else if (supCnt > 2) {
-        vSup.innerText = `[${supCnt}/2 ★]`;
+        sSup.innerText = "★";
         bSup.className = "btn btn-stacked btn-done";
       } else {
-        vSup.innerText = `[${supCnt}/2]`;
+        sSup.innerText = "";
         bSup.className = "btn btn-stacked";
       }
     }
