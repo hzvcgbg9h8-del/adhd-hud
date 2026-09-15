@@ -16,6 +16,7 @@
       --card: #0d0e11;
       --card-inner: #16181d;
       --border: #22252c;
+      --border-bright: #3a3f4d;
       --text: #ffffff;
       --text-muted: #8e94a0;
       --accent: #30d158;
@@ -58,6 +59,7 @@
       gap: 8px;
     }
 
+    /* HORNÍ HUD PANEL */
     .hud-header {
       background: var(--card);
       border: 1.5px solid var(--border);
@@ -142,6 +144,7 @@
       margin-top: 2px;
     }
 
+    /* OBLAST TLAČÍTEK */
     .controls-zone {
       display: flex;
       flex-direction: column;
@@ -155,6 +158,12 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 6px;
+    }
+
+    .row-split-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 5px;
     }
 
     .btn {
@@ -172,7 +181,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 0 8px;
+      padding: 0 6px;
       cursor: pointer;
       white-space: nowrap;
       overflow: hidden;
@@ -227,6 +236,7 @@
       flex-shrink: 0;
     }
 
+    /* MODÁLY */
     .modal {
       display: none;
       position: fixed;
@@ -267,6 +277,7 @@
 <body>
 
   <div class="terminal">
+    <!-- HORNÍ HUD -->
     <div class="hud-header">
       <div class="hud-topline">
         <span class="tag-title">/// BLACK_OPPS</span>
@@ -298,26 +309,33 @@
       </div>
     </div>
 
+    <!-- OBLAST TLAČÍTEK -->
     <div class="controls-zone">
       <div class="row-split">
-        <!-- BOD 4: VÝCHOZÍ STAV [DEPLOY MEDIC] -->
         <button id="btnMedic" class="btn" onclick="toggleMedic()">🧪 [DEPLOY MEDIC]</button>
         <button id="btnPhd" class="btn" onclick="addPhd()">📡 [INTEL] PhD (+1H)</button>
       </div>
 
       <button id="btnEngage" class="btn" onclick="confirmEngaged()">🪂 [CONFIRM] ENGAGED</button>
-      <button id="btnExecShield" class="btn" onclick="confirmExec()">🧱 [SHIELD] EXECUTIVE CONTROL</button>
-
+      <button id="btnExecShield" class="btn" onclick="openExecChoiceModal()">🧱 [SHIELD] EXECUTIVE CONTROL</button>
       <button id="btnRetreat" class="btn btn-warn" onclick="toggleRetreat()">🚁 [ABORT] TACTICAL RETREAT</button>
 
+      <!-- Večerní a noční tlačítka -->
       <button id="btnCeasefireRtb" class="btn btn-warn" style="display: none;" onclick="confirmCeasefireRtb()">🛑 [CONFIRM] CEASEFIRE // RETURN TO BASE</button>
       <button id="btnFinalLockdown" class="btn btn-warn" style="display: none;" onclick="openIntegrityModal()">🚨 [POSSIBLE BREACH ALERT] VERIFY EXEC INTEGRITY</button>
       <button id="btnLightsOut" class="btn" style="display: none;" onclick="recordLightsOut()">🌙 [PROTOCOL] LIGHTS OUT // JÍT SPÁT</button>
 
-      <button id="btnDebrief" class="btn" onclick="openDebriefModal()">📻 [COMMS] TACTICAL DEBRIEF [0/2]</button>
+      <!-- 3-SLOUPOVÝ PANEL KVÓT (1:1:1) -->
+      <div class="row-split-3">
+        <button id="btnDrill" class="btn" onclick="openDrillModal()">⚔️ DRL: [0/3]</button>
+        <button id="btnDebrief" class="btn" onclick="openDebriefModal()">📻 DBF: [0/2]</button>
+        <button id="btnSupply" class="btn" onclick="openSupplyModal()">🚚 SUP: [0/2]</button>
+      </div>
+
       <button class="btn btn-alert" onclick="openStandDown()">🚨 [PROTOCOL] STAND DOWN</button>
     </div>
 
+    <!-- PATIČKA -->
     <div class="footer">
       <span id="objMilestone">OBJ: T-D DO 12.</span>
       <span id="sleepStat">BED: --:--</span>
@@ -325,6 +343,18 @@
     </div>
   </div>
 
+  <!-- MODAL: ROZCESTNÍK EXECUTIVE CONTROL -->
+  <div id="execChoiceModal" class="modal">
+    <div class="modal-box" style="border-color: var(--border-bright);">
+      <div class="modal-title" style="color: var(--text);">🧱 ROZCESTNÍK EXEKUTIVNÍ KONTROLY</div>
+      <p>[ZVOLTE AKTUÁLNÍ OPERAČNÍ STAV INTEGRITY KORTEXU]</p><br>
+      <button class="modal-btn btn-m-safe" onclick="resolveExecChoice(true)">🪖 [CONFIRM] LINIE UDRŽENA (+1 STREAK)</button>
+      <button class="modal-btn btn-m-alert" onclick="resolveExecChoice(false)">⚠️ [BREACH] PERIMETR PROLOMEN (RESET D-00)</button>
+      <button class="modal-btn btn-m-cancel" onclick="closeExecChoiceModal()">ZRUŠIT</button>
+    </div>
+  </div>
+
+  <!-- MODAL: STAND DOWN -->
   <div id="standDownModal" class="modal">
     <div class="modal-box" style="border-color: var(--alert); background: #140808;">
       <div class="modal-title" style="color: var(--alert);">⚠️ KLID ZBRANÍ // STAND DOWN</div>
@@ -338,17 +368,30 @@
     </div>
   </div>
 
+  <!-- MODAL: NOČNÍ INTEGRITY LOCKDOWN -->
   <div id="integrityModal" class="modal">
     <div class="modal-box">
       <div class="modal-title" style="color: var(--accent);">🛡️ VERIFIKACE EXECUTIVE CONTROL</div>
       <p>[ZÁVĚREČNÁ PROVĚRKA CELÉHO DNE]</p><br>
       <p>Byla obranná linie kortexu udržena po celý den a večer bez infiltrace, ztráty sebekontroly a neautorizovaných aktivit?</p>
-      <button class="modal-btn btn-m-safe" onclick="resolveIntegrity(true)">🛡️ [PERIMETER INTACT] LINIE UDRŽENA (+1 STREAK)</button>
-      <button class="modal-btn btn-m-alert" onclick="resolveIntegrity(false)">❌ [BREACH CONFIRMED] PERIMETR PROLOMEN (MISSION FAILED)</button>
+      <button class="modal-btn btn-m-safe" onclick="resolveIntegrity(true)">🪖 [CONFIRM] LINIE UDRŽENA (+1 STREAK)</button>
+      <button class="modal-btn btn-m-alert" onclick="resolveIntegrity(false)">⚠️ [BREACH] PERIMETR PROLOMEN (MISSION FAILED)</button>
       <button class="modal-btn btn-m-cancel" onclick="closeIntegrityModal()">ZRUŠIT</button>
     </div>
   </div>
 
+  <!-- MODAL: DRILL (TÝDENNÍ CVIČENÍ) -->
+  <div id="drillModal" class="modal">
+    <div class="modal-box" style="border-color: var(--accent);">
+      <div class="modal-title" style="color: var(--accent);">⚔️ BOJOVÝ VÝCVIK // COMBAT READINESS</div>
+      <p>[FYZICKÁ PŘIPRAVENOST JEDNOTKY]</p><br>
+      <p>Potvrdit absolvování tréninkové jednotky (posilovna / kardio / bojový drill)? (+1 k týdenní kvótě DRILL 3/3)</p>
+      <button class="modal-btn btn-m-safe" onclick="confirmDrillSuccess()">✅ [CONFIRM] VÝCVIK DOKONČEN</button>
+      <button class="modal-btn btn-m-cancel" onclick="closeDrillModal()">ZRUŠIT</button>
+    </div>
+  </div>
+
+  <!-- MODAL: DEBRIEF -->
   <div id="debriefModal" class="modal">
     <div class="modal-box" style="border-color: var(--accent);">
       <div class="modal-title" style="color: var(--accent);">📻 POTVRZENÍ TACTICAL DEBRIEF</div>
@@ -359,6 +402,17 @@
     </div>
   </div>
 
+  <!-- MODAL: SUPPLY RUN -->
+  <div id="supplyModal" class="modal">
+    <div class="modal-box" style="border-color: var(--accent);">
+      <div class="modal-title" style="color: var(--accent);">🚚 LOGISTIKA // SUPPLY RUN</div>
+      <p>[EXTERNÍ ZDROJOVÉ ZAJIŠTĚNÍ JEDNOTKY]</p><br>
+      <p>Potvrdit dokončení operačního logistického výjezdu (rozvoz / brigáda)? (+1 k měsíční kvótě SUPPLY 2/2)</p>
+      <button class="modal-btn btn-m-safe" onclick="confirmSupplySuccess()">✅ [CONFIRM] VÝJEZD DOKONČEN</button>
+      <button class="modal-btn btn-m-cancel" onclick="closeSupplyModal()">ZRUŠIT</button>
+    </div>
+  </div>
+
   <script>
     const BIN_ID = "6aa83826ffd5d16053063312";
     const API_KEY = "$2a$10$5W9YRtTCXczTOLRzMcJf4.qnbAzWLqk.vCFU08dvkKQcVoKIduxG2";
@@ -366,10 +420,20 @@
 
     function getTodayStr() { return new Date().toISOString().slice(0, 10); }
     function getCurrentMonthStr() { return new Date().toISOString().slice(0, 7); }
+    
+    // Čistý výpočet pondělí aktuálního týdne (zabraňuje rozpadu synchronizace)
+    function getCurrentMondayStr() {
+      const d = new Date();
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      const monday = new Date(d.setDate(diff));
+      return monday.toISOString().slice(0, 10);
+    }
 
     let state = {
       date: getTodayStr(),
       currentMonth: getCurrentMonthStr(),
+      currentMonday: getCurrentMondayStr(),
       atomoxetin: false,
       engaged: false,
       ceasefireConfirmed: false,
@@ -379,10 +443,11 @@
       execFailedToday: false,
       integrityLocked: false,
       debriefCount: 0,
+      drillCount: 0,
+      supplyCount: 0,
       tacticalRetreat: false,
       bedtime: null,
-      sleepHistory: [],
-      debriefResetDoneV6: false
+      sleepHistory: []
     };
 
     async function loadCloudState() {
@@ -395,23 +460,30 @@
           let record = data.record;
           let today = getTodayStr();
           let thisMonth = getCurrentMonthStr();
+          let thisMonday = getCurrentMondayStr();
 
           let needsSync = false;
 
-          if (!record.debriefResetDoneV6) {
-            record.debriefCount = 0;
-            record.debriefResetDoneV6 = true;
+          if (!record.sleepHistory) record.sleepHistory = [];
+          if (record.drillCount === undefined) { record.drillCount = 0; needsSync = true; }
+          if (record.supplyCount === undefined) { record.supplyCount = 0; needsSync = true; }
+
+          // Týdenní reset (pondělí)
+          if (!record.currentMonday || record.currentMonday !== thisMonday) {
+            record.currentMonday = thisMonday;
+            record.drillCount = 0;
             needsSync = true;
           }
 
-          if (!record.sleepHistory) record.sleepHistory = [];
+          // Měsíční reset
           if (!record.currentMonth || record.currentMonth !== thisMonth) {
             record.currentMonth = thisMonth;
             record.debriefCount = 0;
+            record.supplyCount = 0;
             needsSync = true;
           }
 
-          // BOD 1, 2, 3: Půlnoční reset
+          // Denní půlnoční reset
           if (record.date !== today) {
             record.date = today;
             record.atomoxetin = false;
@@ -481,21 +553,43 @@
       }
     }
 
-    function confirmExec() {
-      if (!state.execConfirmedToday) {
-        state.streak += 1;
-        state.execConfirmedToday = true;
+    function openExecChoiceModal() {
+      if (state.execFailedToday) return;
+      document.getElementById("execChoiceModal").style.display = "flex";
+    }
+    function closeExecChoiceModal() { document.getElementById("execChoiceModal").style.display = "none"; }
+
+    function resolveExecChoice(isConfirmed) {
+      closeExecChoiceModal();
+      if (isConfirmed) {
+        if (!state.execConfirmedToday) {
+          state.streak += 1;
+          state.execConfirmedToday = true;
+        }
         state.execFailedToday = false;
       } else {
+        state.streak = 0;
         state.execConfirmedToday = false;
-        state.streak = Math.max(0, state.streak - 1);
+        state.execFailedToday = true;
+        state.integrityLocked = true;
+        state.tacticalRetreat = false;
       }
       render();
       syncCloudState();
     }
 
     function toggleRetreat() {
+      if (state.execFailedToday) return;
       state.tacticalRetreat = !state.tacticalRetreat;
+      render();
+      syncCloudState();
+    }
+
+    function openDrillModal() { document.getElementById("drillModal").style.display = "flex"; }
+    function closeDrillModal() { document.getElementById("drillModal").style.display = "none"; }
+    function confirmDrillSuccess() {
+      closeDrillModal();
+      state.drillCount = (state.drillCount || 0) + 1;
       render();
       syncCloudState();
     }
@@ -505,14 +599,22 @@
       document.getElementById("debriefModal").style.display = "flex";
     }
     function closeDebriefModal() { document.getElementById("debriefModal").style.display = "none"; }
-
     function confirmDebriefSuccess() {
       closeDebriefModal();
       if (state.debriefCount < 2) {
-        state.debriefCount += 1;
+        state.debriefCount = (state.debriefCount || 0) + 1;
         render();
         syncCloudState();
       }
+    }
+
+    function openSupplyModal() { document.getElementById("supplyModal").style.display = "flex"; }
+    function closeSupplyModal() { document.getElementById("supplyModal").style.display = "none"; }
+    function confirmSupplySuccess() {
+      closeSupplyModal();
+      state.supplyCount = (state.supplyCount || 0) + 1;
+      render();
+      syncCloudState();
     }
 
     function openStandDown() { document.getElementById("standDownModal").style.display = "flex"; }
@@ -526,8 +628,6 @@
 
     function resolveIntegrity(isSuccess) {
       closeIntegrityModal();
-      if (state.integrityLocked) return;
-
       state.integrityLocked = true;
       if (isSuccess) {
         if (!state.execConfirmedToday) {
@@ -539,6 +639,7 @@
         state.execConfirmedToday = false;
         state.execFailedToday = true;
         state.streak = 0;
+        state.tacticalRetreat = false;
       }
       render();
       syncCloudState();
@@ -570,15 +671,18 @@
       document.getElementById("objMilestone").innerText = `OBJ: T-${diffDays}D DO 12.`;
       document.getElementById("sleepStat").innerText = state.bedtime ? `BED: ${state.bedtime} ✓` : "BED: --:--";
 
-      // 1. TELEMETRIE (MEDIC IN POS)
+      // TELEMETRIE
       const tMed = document.getElementById("teleMedic");
       tMed.innerText = state.atomoxetin ? "IN POS ✓" : "STANDBY";
       tMed.style.color = state.atomoxetin ? "var(--accent)" : "var(--alert)";
 
       const tOps = document.getElementById("teleOps");
-      if (isLockdown) {
-        tOps.innerText = state.execFailedToday ? "FAILED ❌" : (state.integrityLocked ? "LOCKED ✓" : "VERIFY REQ");
-        tOps.style.color = state.execFailedToday ? "var(--alert)" : (state.integrityLocked ? "var(--accent)" : "var(--warn)");
+      if (state.execFailedToday) {
+        tOps.innerText = "FAILED ❌";
+        tOps.style.color = "var(--alert)";
+      } else if (isLockdown) {
+        tOps.innerText = state.integrityLocked ? "LOCKED ✓" : "VERIFY REQ";
+        tOps.style.color = state.integrityLocked ? "var(--accent)" : "var(--warn)";
       } else if (isPostCeasefire) {
         tOps.innerText = state.ceasefireConfirmed ? "SECURED ✓" : "RTB REQ";
         tOps.style.color = state.ceasefireConfirmed ? "var(--accent)" : "var(--warn)";
@@ -593,12 +697,11 @@
       tPhd.innerText = `${bStr} ${state.phdHours}/3`;
       tPhd.style.color = state.phdHours === 3 ? "var(--accent)" : (state.phdHours > 0 ? "var(--text)" : "var(--text-muted)");
 
-      // EXEC: fajfka pouze při potvrzení dnes, jinak vykřičník
       const tExec = document.getElementById("teleExec");
       tExec.innerText = `D-${String(state.streak).padStart(2,'0')} ${state.execConfirmedToday ? "✓" : (state.execFailedToday ? "❌" : "!")}`;
       tExec.style.color = state.execFailedToday ? "var(--alert)" : (state.execConfirmedToday ? "var(--accent)" : "var(--text-muted)");
 
-      // 2. TLAČÍTKO MEDIC (BOD 4: DEPLOYED ✓)
+      // TLAČÍTKA
       const bMedic = document.getElementById("btnMedic");
       bMedic.innerText = state.atomoxetin ? "🧪 [DEPLOYED ✓]" : "🧪 [DEPLOY MEDIC]";
       bMedic.className = "btn" + (state.atomoxetin ? " btn-done" : "");
@@ -609,7 +712,6 @@
       bPhd.innerText = state.phdHours === 3 ? "📡 [INTEL] PhD [3/3 ✓]" : `📡 [INTEL] PhD [${phdBlocks} ${state.phdHours}/3]`;
       bPhd.className = "btn" + (state.phdHours === 3 ? " btn-done" : "");
 
-      // 3. OVLÁDACÍ TLAČÍTKA
       const bEngage = document.getElementById("btnEngage");
       const bExec = document.getElementById("btnExecShield");
       const bRetreat = document.getElementById("btnRetreat");
@@ -628,7 +730,24 @@
       bLockdown.style.display = "none";
       bNight.style.display = "none";
 
-      if (isLockdown) {
+      // ABSOLUTNÍ PRIORITA: PERIMETER BREACH
+      if (state.execFailedToday) {
+        badge.innerText = "[SYS: MISSION FAILED]";
+        badge.className = "badge badge-alert";
+        title.innerText = ">> DEFENSE PERIMETER BREACHED";
+        sub.innerText = "EXEKUTIVNÍ KONTROLA KOMPROMITOVÁNA // D-00";
+
+        if (isLockdown) {
+          bLockdown.style.display = "flex";
+          bLockdown.innerText = "⚠️ [BREACH CONFIRMED] MISSION FAILED";
+          bLockdown.className = "btn btn-alert btn-locked";
+          bNight.style.display = "flex";
+        } else {
+          bExec.style.display = "flex";
+          bExec.innerText = "⚠️ [BREACH CONFIRMED] D-00 RESET";
+          bExec.className = "btn btn-alert btn-locked";
+        }
+      } else if (isLockdown) {
         bLockdown.style.display = "flex";
         bNight.style.display = "flex";
 
@@ -640,14 +759,7 @@
           bNight.className = "btn";
         }
 
-        if (state.execFailedToday) {
-          bLockdown.innerText = "🚨 [MISSION FAILED] PERIMETER BREACHED";
-          bLockdown.className = "btn btn-alert btn-locked";
-          badge.innerText = "[SYS: MISSION FAILED]";
-          badge.className = "badge badge-alert";
-          title.innerText = ">> DEFENSE PERIMETER BREACHED";
-          sub.innerText = "EXEKUTIVNÍ KONTROLA KOMPROMITOVÁNA";
-        } else if (state.integrityLocked && allObjectivesDone) {
+        if (state.integrityLocked && allObjectivesDone) {
           bLockdown.innerText = "🏆 [ALL OBJECTIVES SECURED] MISSION ACCOMPLISHED";
           bLockdown.className = "btn btn-reward btn-locked";
           badge.innerText = "[SYS: MISSION ACCOMPLISHED]";
@@ -669,7 +781,6 @@
           title.innerText = ">> BASE LOCKDOWN // ČEKÁ SE NA VERIFIKACI";
           sub.innerText = "POTVRĎ INTEGRITU PERIMETRU";
         }
-
       } else if (isPostCeasefire) {
         bCeasefire.style.display = "flex";
 
@@ -688,7 +799,6 @@
           title.innerText = ">> CEASEFIRE V PLATNOSTI // ZASTAVIT PALBU";
           sub.innerText = "ROZKAZ: RETURN TO BASE A UKONČENÍ OPERACÍ";
         }
-
       } else {
         bEngage.style.display = "flex";
         bExec.style.display = "flex";
@@ -697,7 +807,7 @@
         bEngage.innerText = state.engaged ? "🪂 [ENGAGED ✓]" : "🪂 [CONFIRM] ENGAGED";
         bEngage.className = "btn" + (state.engaged ? " btn-done" : "");
 
-        bExec.innerText = state.execConfirmedToday ? `🧱 [SHIELD: D-${String(state.streak).padStart(2,'0')} ACTIVE ✓]` : "🧱 [SHIELD] EXECUTIVE CONTROL";
+        bExec.innerText = state.execConfirmedToday ? `🪖 [SHIELD: D-${String(state.streak).padStart(2,'0')} ACTIVE ✓]` : "🧱 [SHIELD] EXECUTIVE CONTROL";
         bExec.className = "btn" + (state.execConfirmedToday ? " btn-done" : "");
 
         if (state.tacticalRetreat) {
@@ -730,13 +840,37 @@
         }
       }
 
-      // DEBRIEF [0/2]
+      // KVÓTY (1:1:1)
+      const bDrill = document.getElementById("btnDrill");
+      const dCnt = state.drillCount || 0;
+      if (dCnt === 3) {
+        bDrill.innerText = "⚔️ DRL: [3/3 ✓]";
+        bDrill.className = "btn btn-done";
+      } else if (dCnt > 3) {
+        bDrill.innerText = `⚔️ DRL: [${dCnt}/3 ★]`;
+        bDrill.className = "btn btn-done";
+      } else {
+        bDrill.innerText = `⚔️ DRL: [${dCnt}/3]`;
+        bDrill.className = "btn";
+      }
+
       const bDeb = document.getElementById("btnDebrief");
-      const isDebriefMax = state.debriefCount >= 2;
-      bDeb.innerText = isDebriefMax 
-        ? "📻 [COMMS] TACTICAL DEBRIEF [2/2 ✓]" 
-        : `📻 [COMMS] TACTICAL DEBRIEF [${state.debriefCount}/2]`;
-      bDeb.className = "btn" + (isDebriefMax ? " btn-done btn-locked" : "");
+      const debCnt = state.debriefCount || 0;
+      bDeb.innerText = (debCnt >= 2) ? "📻 DBF: [2/2 ✓]" : `📻 DBF: [${debCnt}/2]`;
+      bDeb.className = "btn" + (debCnt >= 2 ? " btn-done btn-locked" : "");
+
+      const bSup = document.getElementById("btnSupply");
+      const supCnt = state.supplyCount || 0;
+      if (supCnt === 2) {
+        bSup.innerText = "🚚 SUP: [2/2 ✓]";
+        bSup.className = "btn btn-done";
+      } else if (supCnt > 2) {
+        bSup.innerText = `🚚 SUP: [${supCnt}/2 ★]`;
+        bSup.className = "btn btn-done";
+      } else {
+        bSup.innerText = `🚚 SUP: [${supCnt}/2]`;
+        bSup.className = "btn";
+      }
     }
 
     loadCloudState();
