@@ -58,7 +58,6 @@
       gap: 8px;
     }
 
-    /* 1. HORNÍ HUD PANEL */
     .hud-header {
       background: var(--card);
       border: 1.5px solid var(--border);
@@ -117,7 +116,6 @@
       text-overflow: ellipsis;
     }
 
-    /* TELEMETRIE */
     .tele-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -144,7 +142,6 @@
       margin-top: 2px;
     }
 
-    /* 2. OBLAST TLAČÍTEK: ROVNOMĚRNĚ VYPLŇUJE STŘED */
     .controls-zone {
       display: flex;
       flex-direction: column;
@@ -216,7 +213,6 @@
       color: #fff;
     }
 
-    /* 3. PATIČKA */
     .footer {
       display: flex;
       justify-content: space-between;
@@ -231,7 +227,6 @@
       flex-shrink: 0;
     }
 
-    /* MODÁLY */
     .modal {
       display: none;
       position: fixed;
@@ -272,7 +267,6 @@
 <body>
 
   <div class="terminal">
-    <!-- HORNÍ HUD PANEL -->
     <div class="hud-header">
       <div class="hud-topline">
         <span class="tag-title">/// BLACK_OPPS</span>
@@ -304,9 +298,9 @@
       </div>
     </div>
 
-    <!-- OBLAST TLAČÍTEK -->
     <div class="controls-zone">
       <div class="row-split">
+        <!-- BOD 4: VÝCHOZÍ STAV [DEPLOY MEDIC] -->
         <button id="btnMedic" class="btn" onclick="toggleMedic()">🧪 [DEPLOY MEDIC]</button>
         <button id="btnPhd" class="btn" onclick="addPhd()">📡 [INTEL] PhD (+1H)</button>
       </div>
@@ -316,17 +310,14 @@
 
       <button id="btnRetreat" class="btn btn-warn" onclick="toggleRetreat()">🚁 [ABORT] TACTICAL RETREAT</button>
 
-      <!-- Večerní a noční tlačítka -->
       <button id="btnCeasefireRtb" class="btn btn-warn" style="display: none;" onclick="confirmCeasefireRtb()">🛑 [CONFIRM] CEASEFIRE // RETURN TO BASE</button>
       <button id="btnFinalLockdown" class="btn btn-warn" style="display: none;" onclick="openIntegrityModal()">🚨 [POSSIBLE BREACH ALERT] VERIFY EXEC INTEGRITY</button>
       <button id="btnLightsOut" class="btn" style="display: none;" onclick="recordLightsOut()">🌙 [PROTOCOL] LIGHTS OUT // JÍT SPÁT</button>
 
-      <!-- Debrief s čistým čítačem [0/2] -->
       <button id="btnDebrief" class="btn" onclick="openDebriefModal()">📻 [COMMS] TACTICAL DEBRIEF [0/2]</button>
       <button class="btn btn-alert" onclick="openStandDown()">🚨 [PROTOCOL] STAND DOWN</button>
     </div>
 
-    <!-- PATIČKA -->
     <div class="footer">
       <span id="objMilestone">OBJ: T-D DO 12.</span>
       <span id="sleepStat">BED: --:--</span>
@@ -334,7 +325,6 @@
     </div>
   </div>
 
-  <!-- MODAL: STAND DOWN -->
   <div id="standDownModal" class="modal">
     <div class="modal-box" style="border-color: var(--alert); background: #140808;">
       <div class="modal-title" style="color: var(--alert);">⚠️ KLID ZBRANÍ // STAND DOWN</div>
@@ -348,7 +338,6 @@
     </div>
   </div>
 
-  <!-- MODAL: INTEGRITY LOCKDOWN -->
   <div id="integrityModal" class="modal">
     <div class="modal-box">
       <div class="modal-title" style="color: var(--accent);">🛡️ VERIFIKACE EXECUTIVE CONTROL</div>
@@ -360,7 +349,6 @@
     </div>
   </div>
 
-  <!-- MODAL: TACTICAL DEBRIEF -->
   <div id="debriefModal" class="modal">
     <div class="modal-box" style="border-color: var(--accent);">
       <div class="modal-title" style="color: var(--accent);">📻 POTVRZENÍ TACTICAL DEBRIEF</div>
@@ -394,7 +382,7 @@
       tacticalRetreat: false,
       bedtime: null,
       sleepHistory: [],
-      debriefResetDoneV5: false
+      debriefResetDoneV6: false
     };
 
     async function loadCloudState() {
@@ -410,10 +398,9 @@
 
           let needsSync = false;
 
-          // HARD-RESET DEBRIEFU DO CLOUDU (Garantuje 0/2)
-          if (!record.debriefResetDoneV5) {
+          if (!record.debriefResetDoneV6) {
             record.debriefCount = 0;
-            record.debriefResetDoneV5 = true;
+            record.debriefResetDoneV6 = true;
             needsSync = true;
           }
 
@@ -424,6 +411,7 @@
             needsSync = true;
           }
 
+          // BOD 1, 2, 3: Půlnoční reset
           if (record.date !== today) {
             record.date = today;
             record.atomoxetin = false;
@@ -582,7 +570,7 @@
       document.getElementById("objMilestone").innerText = `OBJ: T-${diffDays}D DO 12.`;
       document.getElementById("sleepStat").innerText = state.bedtime ? `BED: ${state.bedtime} ✓` : "BED: --:--";
 
-      // 1. TELEMETRIE
+      // 1. TELEMETRIE (MEDIC IN POS)
       const tMed = document.getElementById("teleMedic");
       tMed.innerText = state.atomoxetin ? "IN POS ✓" : "STANDBY";
       tMed.style.color = state.atomoxetin ? "var(--accent)" : "var(--alert)";
@@ -605,13 +593,14 @@
       tPhd.innerText = `${bStr} ${state.phdHours}/3`;
       tPhd.style.color = state.phdHours === 3 ? "var(--accent)" : (state.phdHours > 0 ? "var(--text)" : "var(--text-muted)");
 
+      // EXEC: fajfka pouze při potvrzení dnes, jinak vykřičník
       const tExec = document.getElementById("teleExec");
       tExec.innerText = `D-${String(state.streak).padStart(2,'0')} ${state.execConfirmedToday ? "✓" : (state.execFailedToday ? "❌" : "!")}`;
       tExec.style.color = state.execFailedToday ? "var(--alert)" : (state.execConfirmedToday ? "var(--accent)" : "var(--text-muted)");
 
-      // 2. TLAČÍTKA MEDIC & PhD
+      // 2. TLAČÍTKO MEDIC (BOD 4: DEPLOYED ✓)
       const bMedic = document.getElementById("btnMedic");
-      bMedic.innerText = state.atomoxetin ? "🧪 [MEDIC: IN POS ✓]" : "🧪 [DEPLOY MEDIC]";
+      bMedic.innerText = state.atomoxetin ? "🧪 [DEPLOYED ✓]" : "🧪 [DEPLOY MEDIC]";
       bMedic.className = "btn" + (state.atomoxetin ? " btn-done" : "");
 
       const bPhd = document.getElementById("btnPhd");
@@ -620,7 +609,7 @@
       bPhd.innerText = state.phdHours === 3 ? "📡 [INTEL] PhD [3/3 ✓]" : `📡 [INTEL] PhD [${phdBlocks} ${state.phdHours}/3]`;
       bPhd.className = "btn" + (state.phdHours === 3 ? " btn-done" : "");
 
-      // 3. OVLÁDACÍ TLAČÍTKA & HUD HLÁŠENÍ
+      // 3. OVLÁDACÍ TLAČÍTKA
       const bEngage = document.getElementById("btnEngage");
       const bExec = document.getElementById("btnExecShield");
       const bRetreat = document.getElementById("btnRetreat");
@@ -632,7 +621,6 @@
       const title = document.getElementById("hudTitle");
       const sub = document.getElementById("hudSub");
 
-      // Reset zobrazení
       bEngage.style.display = "none";
       bExec.style.display = "none";
       bRetreat.style.display = "none";
@@ -742,7 +730,7 @@
         }
       }
 
-      // 4. DEBRIEF JAKO ČISTÝ ČÍTAČ [0/2], [1/2], [2/2 ✓]
+      // DEBRIEF [0/2]
       const bDeb = document.getElementById("btnDebrief");
       const isDebriefMax = state.debriefCount >= 2;
       bDeb.innerText = isDebriefMax 
